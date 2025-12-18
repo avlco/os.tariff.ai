@@ -9,13 +9,35 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch User entities from current app (with custom fields)
-        const users = await base44.asServiceRole.entities.User.list();
+        const apiKey = Deno.env.get("TAIRFFAI_APP_API_KEY");
+        if (!apiKey) {
+            return Response.json({ error: 'API key not configured' }, { status: 500 });
+        }
 
-        // Map User to expected structure
-        const mappedUsers = users.map(u => ({
+        // Fetch User entities from external app
+        const response = await fetch(
+            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/User`,
+            {
+                headers: {
+                    'api_key': apiKey,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            return Response.json({ 
+                error: 'Failed to fetch users from external app',
+                status: response.status 
+            }, { status: response.status });
+        }
+
+        const data = await response.json();
+
+        // Map external User data to AppUser structure
+        const mappedUsers = data.map(u => ({
             id: u.id,
-            user_id: u.user_id,
+            user_id: u.id,
             email: u.email,
             full_name: u.full_name,
             company: u.company,
