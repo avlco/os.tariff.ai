@@ -9,11 +9,11 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch AppUser entities from current app
-        const appUsers = await base44.asServiceRole.entities.AppUser.list();
+        // Fetch User entities from current app (with custom fields)
+        const users = await base44.asServiceRole.entities.User.list();
 
-        // Map AppUser to expected structure
-        const mappedUsers = appUsers.map(u => ({
+        // Map User to expected structure
+        const mappedUsers = users.map(u => ({
             id: u.id,
             user_id: u.user_id,
             email: u.email,
