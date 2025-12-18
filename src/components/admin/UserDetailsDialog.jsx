@@ -28,7 +28,7 @@ export default function UserDetailsDialog({ user, open, onClose }) {
     queryFn: async () => {
       const response = await base44.functions.invoke('fetchExternalReports', {});
       const reports = response.data || [];
-      return reports.filter(r => r.user_id === user?.user_id);
+      return reports.filter(r => r.user_id === user?.user_id || r.user_id === user?.id || r.user_id === user?.email);
     },
     enabled: !!user && activeTab === 'reports'
   });
