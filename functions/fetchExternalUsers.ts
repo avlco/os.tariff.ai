@@ -9,52 +9,31 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const apiKey = Deno.env.get("TAIRFFAI_APP_API_KEY");
-        if (!apiKey) {
-            return Response.json({ error: 'API key not configured' }, { status: 500 });
-        }
+        // Fetch User entities from current app
+        const users = await base44.asServiceRole.entities.User.list();
 
-        // Fetch UserSubscription entities from external app
-        const response = await fetch(
-            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/UserSubscription`,
-            {
-                headers: {
-                    'api_key': apiKey,
-                    'Content-Type': 'application/json'
-                }
-            }
-        );
-
-        if (!response.ok) {
-            return Response.json({ 
-                error: 'Failed to fetch users from external app',
-                status: response.status 
-            }, { status: response.status });
-        }
-
-        const data = await response.json();
-
-        // Map external UserSubscription to internal AppUser structure
-        const mappedUsers = data.map(subscription => ({
-            user_id: subscription.user_id,
-            email: subscription.email,
-            full_name: subscription.full_name || subscription.user_name,
-            company: subscription.company,
-            phone: subscription.phone,
-            plan: subscription.plan_type || subscription.plan || 'free',
-            status: subscription.status || 'active',
-            reports_this_month: subscription.reports_used_this_month || 0,
-            total_reports: subscription.total_reports || 0,
-            subscription_start: subscription.subscription_start_date || subscription.created_date,
-            subscription_end: subscription.subscription_end_date,
-            preferred_language: subscription.preferred_language || 'he',
-            last_active: subscription.last_login || subscription.updated_date,
-            created_date: subscription.created_date
+        // Map User to AppUser structure
+        const mappedUsers = users.map(u => ({
+            id: u.id,
+            user_id: u.id,
+            email: u.email,
+            full_name: u.full_name,
+            company: u.company,
+            phone: u.phone,
+            plan: u.plan || 'free',
+            status: u.status || 'active',
+            reports_this_month: u.reports_this_month || 0,
+            total_reports: u.total_reports || 0,
+            subscription_start: u.subscription_start,
+            subscription_end: u.subscription_end,
+            preferred_language: u.preferred_language || 'he',
+            last_active: u.last_active || u.updated_date,
+            created_date: u.created_date
         }));
 
         return Response.json(mappedUsers);
     } catch (error) {
-        console.error('Error fetching external users:', error);
+        console.error('Error fetching users:', error);
         return Response.json({ 
             error: error.message || 'Internal server error' 
         }, { status: 500 });
