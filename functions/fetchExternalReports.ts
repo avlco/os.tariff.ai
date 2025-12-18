@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
         // Map external data structure to internal Report structure
         const mappedReports = data.map(report => ({
             report_id: report.report_id || report.id,
-            user_id: report.user_id || report.created_by,
+            user_id: report.user_id,
             user_email: report.user_email,
             product_name: report.product_name,
             product_description: report.user_input,
