@@ -51,11 +51,20 @@ function CommunicationContent() {
 
   const { data: tickets = [], isLoading } = useQuery({
     queryKey: ['supportTickets'],
-    queryFn: () => base44.entities.SupportTicket.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalTickets', {});
+      return response.data || [];
+    }
   });
 
   const updateTicketMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.SupportTicket.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      const response = await base44.functions.invoke('updateExternalTicket', {
+        entityId: id,
+        updateData: data
+      });
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['supportTickets']);
     }

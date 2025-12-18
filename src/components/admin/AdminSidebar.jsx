@@ -105,7 +105,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
           size={collapsed ? "icon" : "default"}
           onClick={toggleTheme}
           className={cn(
-            "w-full text-white/70 hover:text-white hover:bg-white/10",
+            "w-full text-white/80 hover:text-white hover:bg-white/15",
             collapsed ? "justify-center" : "justify-start"
           )}
         >
@@ -118,7 +118,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
           size={collapsed ? "icon" : "default"}
           onClick={toggleLanguage}
           className={cn(
-            "w-full text-white/70 hover:text-white hover:bg-white/10",
+            "w-full text-white/80 hover:text-white hover:bg-white/15",
             collapsed ? "justify-center" : "justify-start"
           )}
         >

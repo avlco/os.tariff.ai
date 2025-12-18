@@ -42,7 +42,10 @@ function DashboardContent() {
 
   const { data: reports = [] } = useQuery({
     queryKey: ['reports'],
-    queryFn: () => base44.entities.Report.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalReports', {});
+      return response.data || [];
+    }
   });
 
   const { data: payments = [] } = useQuery({
@@ -52,7 +55,10 @@ function DashboardContent() {
 
   const { data: tickets = [] } = useQuery({
     queryKey: ['tickets'],
-    queryFn: () => base44.entities.SupportTicket.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalTickets', {});
+      return response.data || [];
+    }
   });
 
   // Calculate stats
