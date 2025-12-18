@@ -50,7 +50,10 @@ function DashboardContent() {
 
   const { data: payments = [] } = useQuery({
     queryKey: ['payments'],
-    queryFn: () => base44.entities.Payment.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalPayments', {});
+      return response.data || [];
+    }
   });
 
   const { data: tickets = [] } = useQuery({

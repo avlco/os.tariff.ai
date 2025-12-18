@@ -54,7 +54,10 @@ function UsersContent() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['appUsers'],
-    queryFn: () => base44.entities.AppUser.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalUsers', {});
+      return response.data || [];
+    }
   });
 
   const updateUserMutation = useMutation({
