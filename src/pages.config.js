@@ -2,6 +2,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminReports from './pages/AdminReports';
 import AdminAnalytics from './pages/AdminAnalytics';
+import AdminFinancial from './pages/AdminFinancial';
+import AdminCommunication from './pages/AdminCommunication';
 
 
 export const PAGES = {
@@ -9,6 +11,8 @@ export const PAGES = {
     "AdminUsers": AdminUsers,
     "AdminReports": AdminReports,
     "AdminAnalytics": AdminAnalytics,
+    "AdminFinancial": AdminFinancial,
+    "AdminCommunication": AdminCommunication,
 }
 
 export const pagesConfig = {
