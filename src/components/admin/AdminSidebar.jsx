@@ -35,19 +35,19 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
     <aside 
       className={cn(
         "fixed top-0 h-screen transition-all duration-300 z-50",
-        "bg-[#114B5F] text-white",
+        "bg-gradient-to-b from-[#D89C42] to-[#C88A35] text-white shadow-xl",
         collapsed ? "w-20" : "w-64",
         isRTL ? "right-0" : "left-0"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center justify-center border-b border-white/10">
+      <div className="h-16 flex items-center justify-center border-b border-white/20 bg-white/10">
         {collapsed ? (
-          <span className="text-2xl font-bold text-[#42C0B9]">T</span>
+          <span className="text-2xl font-bold text-white drop-shadow-lg">T</span>
         ) : (
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-[#42C0B9]">tariff</span>
-            <span className="text-2xl font-bold text-[#D89C42]">.ai</span>
+            <span className="text-2xl font-bold text-white drop-shadow-lg">tariff</span>
+            <span className="text-2xl font-bold text-[#114B5F] drop-shadow-lg">.ai</span>
           </div>
         )}
       </div>
@@ -56,8 +56,8 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
       <button
         onClick={() => setCollapsed(!collapsed)}
         className={cn(
-          "absolute top-20 w-6 h-6 bg-[#42C0B9] rounded-full flex items-center justify-center",
-          "hover:bg-[#D89C42] transition-colors",
+          "absolute top-20 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg",
+          "hover:bg-[#114B5F] transition-colors text-[#D89C42] hover:text-white",
           isRTL ? "-left-3" : "-right-3"
         )}
       >
@@ -81,8 +81,8 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-lg transition-all",
                     isActive 
-                      ? "bg-[#42C0B9] text-white" 
-                      : "text-white/70 hover:bg-white/10 hover:text-white",
+                      ? "bg-white/20 text-white shadow-md backdrop-blur-sm" 
+                      : "text-white/80 hover:bg-white/10 hover:text-white",
                     collapsed && "justify-center"
                   )}
                 >
@@ -97,7 +97,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
 
       {/* Bottom Actions */}
       <div className={cn(
-        "absolute bottom-0 w-full p-4 border-t border-white/10",
+        "absolute bottom-0 w-full p-4 border-t border-white/20 bg-black/10",
         "space-y-2"
       )}>
         <Button
