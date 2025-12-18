@@ -14,9 +14,9 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        // Fetch User entities from external app
+        // Fetch Users entities from external app
         const response = await fetch(
-            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/User`,
+            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/Users`,
             {
                 headers: {
                     'api_key': apiKey,
