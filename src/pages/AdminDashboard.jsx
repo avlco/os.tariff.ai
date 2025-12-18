@@ -37,7 +37,10 @@ function DashboardContent() {
 
   const { data: users = [] } = useQuery({
     queryKey: ['appUsers'],
-    queryFn: () => base44.entities.AppUser.list()
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchExternalUsers', {});
+      return response.data || [];
+    }
   });
 
   const { data: reports = [] } = useQuery({
