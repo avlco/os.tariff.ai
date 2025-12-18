@@ -14,9 +14,9 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        // Fetch UserSubscription entities from external app
+        // Fetch User entities from external app
         const response = await fetch(
-            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/UserSubscription`,
+            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/User`,
             {
                 headers: {
                     'api_key': apiKey,
@@ -34,22 +34,22 @@ Deno.serve(async (req) => {
 
         const data = await response.json();
 
-        // Map external UserSubscription to internal AppUser structure
-        const mappedUsers = data.map(subscription => ({
-            user_id: subscription.user_id,
-            email: subscription.email,
-            full_name: subscription.full_name || subscription.user_name,
-            company: subscription.company,
-            phone: subscription.phone,
-            plan: subscription.plan_type || subscription.plan || 'free',
-            status: subscription.status || 'active',
-            reports_this_month: subscription.reports_used_this_month || 0,
-            total_reports: subscription.total_reports || 0,
-            subscription_start: subscription.subscription_start_date || subscription.created_date,
-            subscription_end: subscription.subscription_end_date,
-            preferred_language: subscription.preferred_language || 'he',
-            last_active: subscription.last_login || subscription.updated_date,
-            created_date: subscription.created_date
+        // Map external User to internal AppUser structure
+        const mappedUsers = data.map(user => ({
+            user_id: user.id,
+            email: user.email,
+            full_name: user.full_name,
+            company: user.company,
+            phone: user.phone,
+            plan: user.plan || 'free',
+            status: user.status || 'active',
+            reports_this_month: user.reports_this_month || 0,
+            total_reports: user.total_reports || 0,
+            subscription_start: user.subscription_start || user.created_date,
+            subscription_end: user.subscription_end,
+            preferred_language: user.preferred_language || 'he',
+            last_active: user.last_active || user.updated_date,
+            created_date: user.created_date
         }));
 
         return Response.json(mappedUsers);
