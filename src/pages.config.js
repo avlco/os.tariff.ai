@@ -4,6 +4,7 @@ import AdminReports from './pages/AdminReports';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminFinancial from './pages/AdminFinancial';
 import AdminCommunication from './pages/AdminCommunication';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -18,4 +19,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "AdminDashboard",
     Pages: PAGES,
+    Layout: __Layout,
 };
