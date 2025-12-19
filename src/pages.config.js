@@ -4,6 +4,7 @@ import AdminReports from './pages/AdminReports';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminFinancial from './pages/AdminFinancial';
 import AdminCommunication from './pages/AdminCommunication';
+import AdminCountryLinks from './pages/AdminCountryLinks';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "AdminAnalytics": AdminAnalytics,
     "AdminFinancial": AdminFinancial,
     "AdminCommunication": AdminCommunication,
+    "AdminCountryLinks": AdminCountryLinks,
 }
 
 export const pagesConfig = {

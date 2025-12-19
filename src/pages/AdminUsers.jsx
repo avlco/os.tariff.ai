@@ -44,7 +44,7 @@ import { format } from 'date-fns';
 
 function UsersContent() {
   const { t, theme, isRTL } = useLanguage();
-
+  const [collapsed, setCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [planFilter, setPlanFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -170,11 +170,11 @@ function UsersContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminUsers" />
+      <AdminSidebar currentPage="AdminUsers" collapsed={collapsed} setCollapsed={setCollapsed} />
       
       <div className={cn(
         "flex-1 transition-all duration-300",
-        isRTL ? "mr-16" : "ml-16"
+        collapsed ? (isRTL ? "mr-16" : "ml-16") : (isRTL ? "mr-64" : "ml-64")
       )}>
         <AdminHeader title={t('userManagement')} />
         

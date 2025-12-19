@@ -47,7 +47,7 @@ import { format } from 'date-fns';
 
 function FinancialContent() {
   const { t, theme, isRTL } = useLanguage();
-
+  const [collapsed, setCollapsed] = useState(false);
   const [timeRange, setTimeRange] = useState('thisMonth');
 
   const { data: payments = [], isLoading } = useQuery({
@@ -140,11 +140,11 @@ function FinancialContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminFinancial" />
+      <AdminSidebar currentPage="AdminFinancial" collapsed={collapsed} setCollapsed={setCollapsed} />
       
       <div className={cn(
         "flex-1 transition-all duration-300",
-        isRTL ? "mr-16" : "ml-16"
+        collapsed ? (isRTL ? "mr-16" : "ml-16") : (isRTL ? "mr-64" : "ml-64")
       )}>
         <AdminHeader title={t('financialOverview')} />
         

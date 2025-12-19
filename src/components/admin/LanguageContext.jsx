@@ -9,6 +9,7 @@ const translations = {
     analytics: 'אנליטיקס',
     financial: 'פיננסי',
     communication: 'תקשורת',
+    countryLinks: 'קישורים למדינות',
     settings: 'הגדרות',
     logout: 'התנתקות',
     
@@ -154,6 +155,7 @@ const translations = {
     analytics: 'Analytics',
     financial: 'Financial',
     communication: 'Communication',
+    countryLinks: 'Country Links',
     settings: 'Settings',
     logout: 'Logout',
     
