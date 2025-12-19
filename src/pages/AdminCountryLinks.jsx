@@ -37,7 +37,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import LinkArrayEditor from '@/components/admin/LinkArrayEditor';
 import ImportProgressDialog from '@/components/admin/ImportProgressDialog';
-import CSVPreviewDialog from '@/components/admin/CSVPreviewDialog';
 
 const countries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", 
@@ -83,7 +82,6 @@ function CountryLinksContent() {
     errors: [],
     successCount: 0
   });
-  const [csvPreview, setCsvPreview] = useState(null);
   const [formData, setFormData] = useState({
     country: '',
     hs_code_digit_structure: '',
@@ -217,43 +215,6 @@ function CountryLinksContent() {
     return result;
   };
 
-  const validateRow = (data, rowNumber) => {
-    const errors = [];
-    
-    // בדיקת שם מדינה
-    if (!data.country || !data.country.trim()) {
-      errors.push('שם מדינה חסר');
-    }
-    
-    // בדיקת פורמט HS Code (אופציונלי אבל אם קיים צריך להיות תקין)
-    if (data.hs_code_digit_structure && !/^\d+(\s*digits?)?$/i.test(data.hs_code_digit_structure.trim())) {
-      // אזהרה בלבד, לא שגיאה חוסמת
-    }
-    
-    // בדיקת תקינות URLs בקישורים
-    const validateLinks = (links) => {
-      if (!links || links.length === 0) return true;
-      return links.every(link => {
-        if (!link.url) return false;
-        try {
-          new URL(link.url);
-          return true;
-        } catch {
-          return false;
-        }
-      });
-    };
-    
-    if (data.custom_links && !validateLinks(data.custom_links)) {
-      errors.push('קישורים מותאמים אישית מכילים URL לא תקין');
-    }
-    if (data.regulation_links && !validateLinks(data.regulation_links)) {
-      errors.push('קישורי רגולציה מכילים URL לא תקין');
-    }
-    
-    return errors;
-  };
-
   const handleImport = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -302,8 +263,17 @@ function CountryLinksContent() {
         // Remove header
         const rows = allLines.slice(1);
         
-        // Parse and validate all rows for preview
-        const previewRows = [];
+        setImportProgress({
+          open: true,
+          progress: 0,
+          total: rows.length,
+          status: 'importing',
+          errors: [],
+          successCount: 0
+        });
+
+        let successCount = 0;
+        const errors = [];
         
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
@@ -313,16 +283,16 @@ function CountryLinksContent() {
             const columns = parseCSVLine(row);
 
             if (columns.length < 9) {
-              previewRows.push({
-                rowNumber,
-                status: 'error',
-                errors: [`מספר עמודות: ${columns.length} במקום 9`],
-                data: {}
-              });
+              errors.push({ row: rowNumber, message: `מספר עמודות: ${columns.length} במקום 9` });
               continue;
             }
 
             const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
+            
+            if (!country || !country.trim()) {
+              errors.push({ row: rowNumber, message: 'שם מדינה חסר' });
+              continue;
+            }
 
             const parseLinks = (linkStr) => {
               if (!linkStr || !linkStr.trim()) return [];
@@ -346,48 +316,40 @@ function CountryLinksContent() {
               notes: notes?.trim() || ''
             };
 
-            const validationErrors = validateRow(data, rowNumber);
             const existing = countryLinks.find(c => c.country === data.country);
-            
-            let status = 'valid';
-            if (validationErrors.length > 0) {
-              status = 'error';
-            } else if (existing) {
-              status = 'duplicate';
+            if (existing) {
+              await updateMutation.mutateAsync({ id: existing.id, data });
             } else {
-              status = 'new';
+              await createMutation.mutateAsync(data);
             }
-
-            previewRows.push({
-              rowNumber,
-              status,
-              errors: validationErrors,
-              data,
-              existingId: existing?.id
-            });
+            
+            successCount++;
           } catch (error) {
-            previewRows.push({
-              rowNumber,
-              status: 'error',
-              errors: [error.message || 'שגיאה בפענוח שורה'],
-              data: {}
-            });
+            errors.push({ row: rowNumber, message: error.message || 'שגיאה בייבוא שורה' });
           }
+          
+          setImportProgress(prev => ({
+            ...prev,
+            progress: i + 1,
+            successCount,
+            errors
+          }));
         }
         
-        setCsvPreview({
-          rows: previewRows,
-          existingCountries: countryLinks
-        });
+        setImportProgress(prev => ({
+          ...prev,
+          status: 'completed',
+          successCount,
+          errors
+        }));
+        
+        queryClient.invalidateQueries(['countryLinks']);
       } catch (error) {
-        setImportProgress({
-          open: true,
-          progress: 0,
-          total: 0,
+        setImportProgress(prev => ({
+          ...prev,
           status: 'error',
-          errors: [{ row: 0, message: error.message }],
-          successCount: 0
-        });
+          errors: [{ row: 0, message: error.message }]
+        }));
       }
     };
     
@@ -404,64 +366,6 @@ function CountryLinksContent() {
     
     reader.readAsText(file, 'UTF-8');
     e.target.value = '';
-  };
-
-  const handleConfirmImport = async (duplicateAction) => {
-    if (!csvPreview) return;
-
-    const validRows = csvPreview.rows.filter(r => r.status === 'valid' || r.status === 'new' || r.status === 'duplicate');
-    
-    setCsvPreview(null);
-    setImportProgress({
-      open: true,
-      progress: 0,
-      total: validRows.length,
-      status: 'importing',
-      errors: [],
-      successCount: 0
-    });
-
-    let successCount = 0;
-    const errors = [];
-    
-    for (let i = 0; i < validRows.length; i++) {
-      const row = validRows[i];
-      
-      try {
-        // טיפול בכפילויות לפי בחירת המשתמש
-        if (row.status === 'duplicate') {
-          if (duplicateAction === 'skip') {
-            continue;
-          } else if (duplicateAction === 'update') {
-            await updateMutation.mutateAsync({ id: row.existingId, data: row.data });
-          } else if (duplicateAction === 'create_new') {
-            await createMutation.mutateAsync(row.data);
-          }
-        } else {
-          await createMutation.mutateAsync(row.data);
-        }
-        
-        successCount++;
-      } catch (error) {
-        errors.push({ row: row.rowNumber, message: error.message || 'שגיאה בייבוא שורה' });
-      }
-      
-      setImportProgress(prev => ({
-        ...prev,
-        progress: i + 1,
-        successCount,
-        errors
-      }));
-    }
-    
-    setImportProgress(prev => ({
-      ...prev,
-      status: 'completed',
-      successCount,
-      errors
-    }));
-    
-    queryClient.invalidateQueries(['countryLinks']);
   };
 
   return (
@@ -542,11 +446,7 @@ function CountryLinksContent() {
                       });
                       setIsEditing(true);
                     }}
-                    style={{
-                      backgroundColor: 'var(--primary-teal)',
-                      color: 'white'
-                    }}
-                    className="hover:opacity-90"
+                    className="bg-[var(--primary-teal)] hover:bg-[var(--teal-dark)] text-white"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Country
@@ -771,13 +671,6 @@ function CountryLinksContent() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <CSVPreviewDialog
-        open={!!csvPreview}
-        onClose={() => setCsvPreview(null)}
-        previewData={csvPreview}
-        onConfirmImport={handleConfirmImport}
-      />
 
       <ImportProgressDialog
         open={importProgress.open}
