@@ -143,12 +143,16 @@ function FinancialContent() {
       <AdminSidebar currentPage="AdminFinancial" />
       
       <div className={cn(
-        "transition-all duration-300",
-        collapsed ? (isRTL ? "mr-20" : "ml-20") : (isRTL ? "mr-64" : "ml-64")
+        "flex-1 transition-all duration-300",
+        isRTL ? "mr-16" : "ml-16"
       )}>
         <AdminHeader title={t('financialOverview')} />
         
-        <main className="p-6">
+        <main className={cn(
+          "p-8",
+          theme === 'dark' ? "bg-slate-950" : "bg-gray-50",
+          "min-h-screen"
+        )}>
           {/* Time Range Filter */}
           <div className="flex justify-between items-center mb-6">
             <Select value={timeRange} onValueChange={setTimeRange}>
