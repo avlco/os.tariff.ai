@@ -8,33 +8,33 @@ export default function StatusBadge({ status, type = 'status' }) {
 
   const statusStyles = {
     // User/Report status
-    active: 'bg-green-50 text-green-700 border-green-200/50',
+    active: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
     inactive: 'bg-gray-50 text-gray-600 border-gray-200/50',
     suspended: 'bg-red-50 text-red-700 border-red-200/50',
-    pending: 'bg-yellow-50 text-yellow-700 border-yellow-200/50',
-    completed: 'bg-green-50 text-green-700 border-green-200/50',
+    pending: 'bg-[#D89C42]/10 text-[#b8822f] border-[#D89C42]/30',
+    completed: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
     failed: 'bg-red-50 text-red-700 border-red-200/50',
-    review: 'bg-blue-50 text-blue-700 border-blue-200/50',
+    review: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',
     
     // Ticket status
-    open: 'bg-blue-50 text-blue-700 border-blue-200/50',
-    in_progress: 'bg-yellow-50 text-yellow-700 border-yellow-200/50',
+    open: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',
+    in_progress: 'bg-[#D89C42]/10 text-[#b8822f] border-[#D89C42]/30',
     waiting_response: 'bg-orange-50 text-orange-700 border-orange-200/50',
-    resolved: 'bg-green-50 text-green-700 border-green-200/50',
+    resolved: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
     closed: 'bg-gray-50 text-gray-600 border-gray-200/50',
     
     // Plans
     free: 'bg-gray-50 text-gray-600 border-gray-200/50',
-    per_use: 'bg-blue-50 text-blue-700 border-blue-200/50',
-    basic: 'bg-teal-50 text-teal-700 border-teal-200/50',
-    pro: 'bg-purple-50 text-purple-700 border-purple-200/50',
-    agency: 'bg-amber-50 text-amber-700 border-amber-200/50',
-    enterprise: 'bg-indigo-50 text-indigo-700 border-indigo-200/50',
+    per_use: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',
+    basic: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
+    pro: 'bg-[#114B5F]/15 text-[#0d3a47] border-[#114B5F]/40',
+    agency: 'bg-[#D89C42]/10 text-[#b8822f] border-[#D89C42]/30',
+    enterprise: 'bg-[#114B5F]/20 text-[#0d3a47] border-[#114B5F]/50',
     
     // Priority
     low: 'bg-gray-50 text-gray-600 border-gray-200/50',
-    medium: 'bg-blue-50 text-blue-700 border-blue-200/50',
-    high: 'bg-orange-50 text-orange-700 border-orange-200/50',
+    medium: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',
+    high: 'bg-[#D89C42]/10 text-[#b8822f] border-[#D89C42]/30',
     urgent: 'bg-red-50 text-red-700 border-red-200/50',
   };
 
