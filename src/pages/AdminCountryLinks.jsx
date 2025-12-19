@@ -330,8 +330,8 @@ function CountryLinksContent() {
           "min-h-screen"
         )}>
           <Card className={cn(
-            "border",
-            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+            "border shadow-sm",
+            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
           )}>
             <CardHeader>
               <div className="flex flex-col md:flex-row gap-4 justify-between">

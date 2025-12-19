@@ -16,8 +16,8 @@ export default function AdminHeader({ title, user }) {
 
   return (
     <header className={cn(
-      "h-16 flex items-center justify-between px-8 border-b",
-      theme === 'dark' ? "bg-slate-900 border-slate-800" : "bg-white border-gray-100"
+      "h-16 flex items-center justify-between px-8 border-b shadow-sm",
+      theme === 'dark' ? "bg-[#0d1117] border-slate-800" : "bg-white border-gray-200"
     )}>
       <h1 className={cn(
         "text-2xl font-semibold",
