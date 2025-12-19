@@ -160,8 +160,8 @@ function DashboardContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* Reports Chart */}
             <Card className={cn(
-              "border",
-              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+              "border shadow-sm rounded-xl",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
@@ -205,8 +205,8 @@ function DashboardContent() {
 
             {/* Revenue Chart */}
             <Card className={cn(
-              "border",
-              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+              "border shadow-sm rounded-xl",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
@@ -253,8 +253,8 @@ function DashboardContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Quick Stats */}
             <Card className={cn(
-              "border",
-              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+              "border shadow-sm rounded-xl",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
@@ -328,8 +328,8 @@ function DashboardContent() {
 
             {/* Recent Activity */}
             <Card className={cn(
-              "lg:col-span-2 border",
-              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+              "lg:col-span-2 border shadow-sm rounded-xl",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
             )}>
               <CardHeader>
                 <CardTitle className={cn(

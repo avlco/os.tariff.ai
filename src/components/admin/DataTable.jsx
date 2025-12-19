@@ -37,7 +37,7 @@ export default function DataTable({ columns, data, loading, onRowClick }) {
 
   return (
     <div className={cn(
-      "rounded-lg border overflow-hidden",
+      "rounded-xl border overflow-hidden shadow-sm",
       theme === 'dark' ? "border-slate-700" : "border-gray-200"
     )}>
       <Table>

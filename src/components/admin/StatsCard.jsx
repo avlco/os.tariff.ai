@@ -8,8 +8,8 @@ export default function StatsCard({ title, value, icon: Icon, trend, trendValue,
 
   return (
     <div className={cn(
-      "rounded-lg p-6 transition-all border",
-      theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
+      "rounded-xl p-6 transition-all border shadow-sm hover:shadow-md",
+      theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200"
     )}>
       <div className={cn("flex items-start justify-between", isRTL && "flex-row-reverse")}>
         <div>
@@ -20,8 +20,8 @@ export default function StatsCard({ title, value, icon: Icon, trend, trendValue,
             {title}
           </p>
           <p className={cn(
-            "text-2xl font-semibold mb-2",
-            theme === 'dark' ? "text-white" : "text-gray-900"
+            "text-3xl font-bold mb-2",
+            theme === 'dark' ? "text-white" : "text-[#114B5F]"
           )}>
             {value}
           </p>
@@ -36,12 +36,18 @@ export default function StatsCard({ title, value, icon: Icon, trend, trendValue,
           )}
         </div>
         <div className={cn(
-          "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-          theme === 'dark' ? "bg-slate-700" : "bg-gray-100"
+          "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+          color === 'navy' && "bg-[#114B5F]/10",
+          color === 'teal' && "bg-[#42C0B9]/10",
+          color === 'gold' && "bg-[#D89C42]/10",
+          color === 'green' && "bg-green-500/10"
         )}>
           <Icon className={cn(
-            "w-5 h-5",
-            theme === 'dark' ? "text-slate-400" : "text-gray-600"
+            "w-6 h-6",
+            color === 'navy' && "text-[#114B5F]",
+            color === 'teal' && "text-[#42C0B9]",
+            color === 'gold' && "text-[#D89C42]",
+            color === 'green' && "text-green-600"
           )} />
         </div>
       </div>
