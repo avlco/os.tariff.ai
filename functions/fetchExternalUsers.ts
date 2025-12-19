@@ -9,8 +9,8 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch users from the built-in User entity using service role
-        const users = await base44.asServiceRole.entities.User.list();
+        // Fetch users from UserMasterData entity using service role
+        const users = await base44.asServiceRole.entities.UserMasterData.list();
 
         return Response.json(users);
     } catch (error) {
