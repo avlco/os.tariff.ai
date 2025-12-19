@@ -20,8 +20,8 @@ export default function AdminHeader({ title, user }) {
       theme === 'dark' ? "bg-[#0d1117] border-slate-800" : "bg-white border-gray-200"
     )}>
       <h1 className={cn(
-        "text-2xl font-semibold",
-        theme === 'dark' ? "text-white" : "text-gray-900"
+        "text-2xl font-bold",
+        theme === 'dark' ? "text-white" : "text-[#114B5F]"
       )}>
         {title}
       </h1>
@@ -55,10 +55,10 @@ export default function AdminHeader({ title, user }) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-3 hover:bg-transparent">
               <div className="text-right hidden md:block">
-                <div className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-gray-900")}>
+                <div className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-[#114B5F]")}>
                   {user?.full_name || 'Admin'}
                 </div>
-                <div className="text-xs text-gray-500">{user?.email}</div>
+                <div className={cn("text-xs", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>{user?.email}</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white font-medium shadow-md">
                 {(user?.full_name || 'A')[0].toUpperCase()}

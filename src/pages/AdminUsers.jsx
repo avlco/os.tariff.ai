@@ -87,7 +87,10 @@ function UsersContent() {
             {(value || row.email || '?')[0].toUpperCase()}
           </div>
           <div>
-            <p className="font-medium">{value || '-'}</p>
+            <p className={cn(
+              "font-medium",
+              theme === 'dark' ? "text-white" : "text-[#114B5F]"
+            )}>{value || '-'}</p>
             <p className={cn(
               "text-sm",
               theme === 'dark' ? "text-slate-400" : "text-gray-500"
@@ -285,7 +288,10 @@ function UsersContent() {
                   {(selectedUser.full_name || selectedUser.email || '?')[0].toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">{selectedUser.full_name || '-'}</h3>
+                  <h3 className={cn(
+                    "text-xl font-bold",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedUser.full_name || '-'}</h3>
                   <p className={theme === 'dark' ? "text-slate-400" : "text-gray-500"}>
                     {selectedUser.email}
                   </p>
@@ -309,19 +315,28 @@ function UsersContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     {t('totalReports')}
                   </p>
-                  <p className="font-medium">{selectedUser.total_reports || 0}</p>
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedUser.total_reports || 0}</p>
                 </div>
                 <div>
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     {t('reportsUsed')}
                   </p>
-                  <p className="font-medium">{selectedUser.reports_this_month || 0}</p>
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedUser.reports_this_month || 0}</p>
                 </div>
                 <div>
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     {t('createdAt')}
                   </p>
-                  <p className="font-medium">
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>
                     {selectedUser.created_date ? format(new Date(selectedUser.created_date), 'dd/MM/yyyy') : '-'}
                   </p>
                 </div>
@@ -329,7 +344,10 @@ function UsersContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     {t('lastActive')}
                   </p>
-                  <p className="font-medium">
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>
                     {selectedUser.last_active ? format(new Date(selectedUser.last_active), 'dd/MM/yyyy HH:mm') : '-'}
                   </p>
                 </div>

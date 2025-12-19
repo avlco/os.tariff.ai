@@ -312,7 +312,7 @@ function CommunicationContent() {
                           </Badge>
                         </div>
                         <h3 className={cn(
-                          "text-lg font-semibold mb-1",
+                          "text-base font-semibold mb-1",
                           theme === 'dark' ? "text-white" : "text-[#114B5F]"
                         )}>
                           {ticket.subject}

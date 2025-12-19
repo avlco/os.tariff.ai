@@ -78,7 +78,10 @@ function ReportsContent() {
       render: (value) => (
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-[#42C0B9]" />
-          <span className="font-medium">{value || '-'}</span>
+          <span className={cn(
+            "font-medium",
+            theme === 'dark' ? "text-white" : "text-[#114B5F]"
+          )}>{value || '-'}</span>
         </div>
       )
     },
@@ -283,7 +286,10 @@ function ReportsContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     {t('createdAt')}
                   </p>
-                  <p className="font-medium">
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>
                     {selectedReport.created_date ? format(new Date(selectedReport.created_date), 'dd/MM/yyyy HH:mm') : '-'}
                   </p>
                 </div>
@@ -311,7 +317,10 @@ function ReportsContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     Origin Country
                   </p>
-                  <p className="font-medium">{selectedReport.origin_country || '-'}</p>
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedReport.origin_country || '-'}</p>
                 </div>
                 <div className={cn(
                   "p-4 rounded-lg",
@@ -320,7 +329,10 @@ function ReportsContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     Manufacturing Country
                   </p>
-                  <p className="font-medium">{selectedReport.manufacturing_country || '-'}</p>
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedReport.manufacturing_country || '-'}</p>
                 </div>
                 <div className={cn(
                   "p-4 rounded-lg",
@@ -329,14 +341,20 @@ function ReportsContent() {
                   <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                     Destination Country
                   </p>
-                  <p className="font-medium">{selectedReport.destination_country || '-'}</p>
+                  <p className={cn(
+                    "font-medium",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>{selectedReport.destination_country || '-'}</p>
                 </div>
               </div>
 
               {/* Classification Reasoning */}
               {selectedReport.classification_reasoning && (
                 <div>
-                  <h4 className="font-semibold mb-2">Classification Reasoning</h4>
+                  <h4 className={cn(
+                    "font-semibold mb-2",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>Classification Reasoning</h4>
                   <p className={cn(
                     "p-4 rounded-lg",
                     theme === 'dark' ? "bg-slate-700 text-slate-300" : "bg-gray-50 text-gray-700"
@@ -349,7 +367,10 @@ function ReportsContent() {
               {/* Product Characteristics */}
               {selectedReport.product_characteristics?.length > 0 && (
                 <div>
-                  <h4 className="font-semibold mb-2">Product Characteristics</h4>
+                  <h4 className={cn(
+                    "font-semibold mb-2",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>Product Characteristics</h4>
                   <ul className="list-disc list-inside space-y-1">
                     {selectedReport.product_characteristics.map((char, idx) => (
                       <li key={idx} className={theme === 'dark' ? "text-slate-300" : "text-gray-700"}>
@@ -363,7 +384,10 @@ function ReportsContent() {
               {/* Tariff Info */}
               {selectedReport.tariff_info && (
                 <div>
-                  <h4 className="font-semibold mb-2">Tariff Information</h4>
+                  <h4 className={cn(
+                    "font-semibold mb-2",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>Tariff Information</h4>
                   <p className={cn(
                     "p-4 rounded-lg",
                     theme === 'dark' ? "bg-slate-700 text-slate-300" : "bg-gray-50 text-gray-700"
@@ -376,7 +400,10 @@ function ReportsContent() {
               {/* Alternative Codes */}
               {selectedReport.alternative_codes?.length > 0 && (
                 <div>
-                  <h4 className="font-semibold mb-2">Alternative Classifications</h4>
+                  <h4 className={cn(
+                    "font-semibold mb-2",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>Alternative Classifications</h4>
                   <div className="space-y-2">
                     {selectedReport.alternative_codes.map((alt, idx) => (
                       <div 
@@ -401,7 +428,10 @@ function ReportsContent() {
               {/* Official Sources */}
               {selectedReport.official_sources?.length > 0 && (
                 <div>
-                  <h4 className="font-semibold mb-2">Official Sources</h4>
+                  <h4 className={cn(
+                    "font-semibold mb-2",
+                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  )}>Official Sources</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedReport.official_sources.map((source, idx) => (
                       <a

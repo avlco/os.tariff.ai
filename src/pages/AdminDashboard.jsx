@@ -166,7 +166,7 @@ function DashboardContent() {
               <CardHeader>
                 <CardTitle className={cn(
                   "text-base font-semibold",
-                  theme === 'dark' ? "text-white" : "text-gray-900"
+                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
                 )}>
                   {t('reportsToday')}
                 </CardTitle>
@@ -211,7 +211,7 @@ function DashboardContent() {
               <CardHeader>
                 <CardTitle className={cn(
                   "text-base font-semibold",
-                  theme === 'dark' ? "text-white" : "text-gray-900"
+                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
                 )}>
                   {t('monthlyRevenue')}
                 </CardTitle>
@@ -259,7 +259,7 @@ function DashboardContent() {
               <CardHeader>
                 <CardTitle className={cn(
                   "text-base font-semibold",
-                  theme === 'dark' ? "text-white" : "text-gray-900"
+                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
                 )}>
                   {t('quickStats')}
                 </CardTitle>
@@ -334,7 +334,7 @@ function DashboardContent() {
               <CardHeader>
                 <CardTitle className={cn(
                   "text-base font-semibold",
-                  theme === 'dark' ? "text-white" : "text-gray-900"
+                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
                 )}>
                   {t('recentActivity')}
                 </CardTitle>
@@ -368,7 +368,7 @@ function DashboardContent() {
                           <div>
                             <p className={cn(
                               "font-medium",
-                              theme === 'dark' ? "text-white" : "text-gray-900"
+                              theme === 'dark' ? "text-white" : "text-[#114B5F]"
                             )}>
                               {item.title}
                             </p>
