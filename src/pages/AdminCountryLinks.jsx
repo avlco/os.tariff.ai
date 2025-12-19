@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import LinkArrayEditor from '@/components/admin/LinkArrayEditor';
+import ImportProgressDialog from '@/components/admin/ImportProgressDialog';
 
 const countries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", 
@@ -73,6 +74,14 @@ function CountryLinksContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [importProgress, setImportProgress] = useState({
+    open: false,
+    progress: 0,
+    total: 0,
+    status: 'idle',
+    errors: [],
+    successCount: 0
+  });
   const [formData, setFormData] = useState({
     country: '',
     hs_code_digit_structure: '',
@@ -175,45 +184,130 @@ function CountryLinksContent() {
 
     const reader = new FileReader();
     reader.onload = async (event) => {
-      const text = event.target?.result;
-      const rows = text.split('\n').slice(1); // Skip header
-      
-      for (const row of rows) {
-        if (!row.trim()) continue;
+      try {
+        const text = event.target?.result;
+        const lines = text.split('\n');
+        const rows = lines.slice(1).filter(row => row.trim()); // Skip header and empty lines
         
-        const columns = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)?.map(col => col.replace(/^"|"$/g, '').trim());
-        if (!columns || columns.length < 9) continue;
+        setImportProgress({
+          open: true,
+          progress: 0,
+          total: rows.length,
+          status: 'importing',
+          errors: [],
+          successCount: 0
+        });
 
-        const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
+        let successCount = 0;
+        const errors = [];
         
-        const parseLinks = (linkStr) => {
-          if (!linkStr) return [];
-          return linkStr.split(';').map(link => {
-            const [label, url] = link.split(':').map(s => s.trim());
-            return url ? { label: label || '', url } : null;
-          }).filter(Boolean);
-        };
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const rowNumber = i + 2; // +2 because of header and 0-index
+          
+          try {
+            // Parse CSV properly handling quoted fields
+            const columns = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let j = 0; j < row.length; j++) {
+              const char = row[j];
+              if (char === '"') {
+                inQuotes = !inQuotes;
+              } else if (char === ',' && !inQuotes) {
+                columns.push(current.trim());
+                current = '';
+              } else {
+                current += char;
+              }
+            }
+            columns.push(current.trim());
 
-        const data = {
-          country: country || '',
-          hs_code_digit_structure: hsCode || '',
-          custom_links: parseLinks(customLinks),
-          regulation_links: parseLinks(regLinks),
-          trade_agreement_links: parseLinks(tradeLinks),
-          government_trade_links: parseLinks(govLinks),
-          regional_agreements_parties: regionalAgreements || '',
-          notes: notes || ''
-        };
+            if (columns.length < 9) {
+              errors.push({ row: rowNumber, message: 'מספר עמודות לא תקין' });
+              continue;
+            }
 
-        const existing = countryLinks.find(c => c.country === country);
-        if (existing) {
-          await updateMutation.mutateAsync({ id: existing.id, data });
-        } else {
-          await createMutation.mutateAsync(data);
+            const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
+            
+            if (!country) {
+              errors.push({ row: rowNumber, message: 'שם מדינה חסר' });
+              continue;
+            }
+
+            const parseLinks = (linkStr) => {
+              if (!linkStr) return [];
+              return linkStr.split(';').map(link => {
+                const parts = link.split(':');
+                if (parts.length < 2) return null;
+                const label = parts[0].trim();
+                const url = parts.slice(1).join(':').trim();
+                return url ? { label, url } : null;
+              }).filter(Boolean);
+            };
+
+            const data = {
+              country: country,
+              hs_code_digit_structure: hsCode || '',
+              custom_links: parseLinks(customLinks),
+              regulation_links: parseLinks(regLinks),
+              trade_agreement_links: parseLinks(tradeLinks),
+              government_trade_links: parseLinks(govLinks),
+              regional_agreements_parties: regionalAgreements || '',
+              notes: notes || ''
+            };
+
+            const existing = countryLinks.find(c => c.country === country);
+            if (existing) {
+              await updateMutation.mutateAsync({ id: existing.id, data });
+            } else {
+              await createMutation.mutateAsync(data);
+            }
+            
+            successCount++;
+          } catch (error) {
+            errors.push({ row: rowNumber, message: error.message || 'שגיאה בייבוא שורה' });
+          }
+          
+          setImportProgress(prev => ({
+            ...prev,
+            progress: i + 1,
+            successCount,
+            errors
+          }));
         }
+        
+        setImportProgress(prev => ({
+          ...prev,
+          status: 'completed',
+          successCount,
+          errors
+        }));
+        
+        queryClient.invalidateQueries(['countryLinks']);
+      } catch (error) {
+        setImportProgress(prev => ({
+          ...prev,
+          status: 'error',
+          errors: [{ row: 0, message: error.message }]
+        }));
       }
     };
-    reader.readAsText(file);
+    
+    reader.onerror = () => {
+      setImportProgress({
+        open: true,
+        progress: 0,
+        total: 0,
+        status: 'error',
+        errors: [{ row: 0, message: 'שגיאה בקריאת הקובץ' }],
+        successCount: 0
+      });
+    };
+    
+    reader.readAsText(file, 'UTF-8');
+    e.target.value = ''; // Reset file input
   };
 
   return (
@@ -294,7 +388,7 @@ function CountryLinksContent() {
                       });
                       setIsEditing(true);
                     }}
-                    className="bg-indigo-600 hover:bg-indigo-700"
+                    className="bg-[var(--primary-teal)] hover:bg-[var(--teal-dark)] text-white"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Country
@@ -339,7 +433,7 @@ function CountryLinksContent() {
                             <TableCell className="text-sm">{idx + 1}</TableCell>
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-2">
-                                <Globe className="w-4 h-4 text-indigo-500" />
+                                <Globe className="w-4 h-4 text-[var(--primary-teal)]" />
                                 {country}
                               </div>
                             </TableCell>
@@ -512,13 +606,23 @@ function CountryLinksContent() {
               <Button variant="outline" onClick={() => setIsEditing(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
+              <Button onClick={handleSave} className="bg-[var(--primary-teal)] hover:bg-[var(--teal-dark)] text-white">
                 Save
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      <ImportProgressDialog
+        open={importProgress.open}
+        onClose={() => setImportProgress(prev => ({ ...prev, open: false }))}
+        progress={importProgress.progress}
+        total={importProgress.total}
+        status={importProgress.status}
+        errors={importProgress.errors}
+        successCount={importProgress.successCount}
+      />
     </div>
   );
 }

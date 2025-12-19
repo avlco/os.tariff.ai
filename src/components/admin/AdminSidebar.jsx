@@ -37,7 +37,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
     <aside 
           className={cn(
             "fixed top-0 h-screen transition-all duration-300 z-50",
-            theme === 'dark' ? "bg-slate-900 border-r border-slate-800" : "bg-white border-r border-gray-100",
+            theme === 'dark' ? "bg-[#0d1117] border-r border-slate-800" : "bg-white border-r border-gray-200",
             collapsed ? "w-16" : "w-64",
             isRTL ? "right-0" : "left-0"
           )}
@@ -50,7 +50,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         "px-4"
       )}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center shadow-lg">
             <span className="text-white text-xl font-bold">T</span>
           </div>
           {!collapsed && (
@@ -130,8 +130,8 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
                     collapsed ? "justify-center" : "justify-start",
                     isActive 
                       ? theme === 'dark' 
-                        ? "bg-indigo-600 text-white" 
-                        : "bg-indigo-50 text-indigo-600"
+                        ? "bg-[var(--primary-teal)] text-white shadow-lg" 
+                        : "bg-gradient-to-r from-[var(--primary-teal)]/10 to-[var(--primary-navy)]/10 text-[var(--primary-navy)] border-r-2 border-[var(--primary-teal)]"
                       : theme === 'dark'
                         ? "text-slate-400 hover:bg-slate-800 hover:text-white"
                         : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"

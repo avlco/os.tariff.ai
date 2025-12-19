@@ -60,7 +60,7 @@ export default function AdminHeader({ title, user }) {
                 </div>
                 <div className="text-xs text-gray-500">{user?.email}</div>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-medium">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white font-medium shadow-md">
                 {(user?.full_name || 'A')[0].toUpperCase()}
               </div>
             </Button>
