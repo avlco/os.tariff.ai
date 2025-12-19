@@ -154,8 +154,8 @@ const translations = {
     reports: 'Reports',
     analytics: 'Analytics',
     financial: 'Financial',
+    dbLinks: 'DB Links',
     communication: 'Communication',
-    countryLinks: 'Country Links',
     settings: 'Settings',
     logout: 'Logout',
     
