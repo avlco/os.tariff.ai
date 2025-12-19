@@ -150,7 +150,7 @@ function CountryLinksContent() {
         "flex-1 transition-all duration-300",
         collapsed ? (isRTL ? "mr-16" : "ml-16") : (isRTL ? "mr-64" : "ml-64")
       )}>
-        <AdminHeader title={t('countryLinks')} collapsed={collapsed} setCollapsed={setCollapsed} />
+        <AdminHeader title={t('countryLinks')} />
         
         <main className={cn(
           "p-8",
@@ -213,25 +213,10 @@ function CountryLinksContent() {
                         Country
                       </TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        HS-Code Digit Structure
+                        HS-Code Structure
                       </TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Custom Links
-                      </TableHead>
-                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Regulation Links
-                      </TableHead>
-                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Trade Agreements Links
-                      </TableHead>
-                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Government Trade Links
-                      </TableHead>
-                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Regional Agreements - Parties
-                      </TableHead>
-                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                        Notes
+                        Links
                       </TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
                         Actions
@@ -266,64 +251,25 @@ function CountryLinksContent() {
                               {countryData?.hs_code_digit_structure || '-'}
                             </TableCell>
                             <TableCell>
-                              {countryData?.custom_links?.length > 0 ? (
+                              {countryData && (
                                 <div className="flex gap-1 flex-wrap">
-                                  {countryData.custom_links.map((link, i) => (
-                                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
-                                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-slate-100">
-                                        {link.label} <ExternalLink className="w-3 h-3 ml-1" />
-                                      </Badge>
-                                    </a>
-                                  ))}
+                                  {countryData.custom_links?.length > 0 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Custom: {countryData.custom_links.length}
+                                    </Badge>
+                                  )}
+                                  {countryData.regulation_links?.length > 0 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Regulation: {countryData.regulation_links.length}
+                                    </Badge>
+                                  )}
+                                  {countryData.trade_agreement_links?.length > 0 && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Trade: {countryData.trade_agreement_links.length}
+                                    </Badge>
+                                  )}
                                 </div>
-                              ) : '-'}
-                            </TableCell>
-                            <TableCell>
-                              {countryData?.regulation_links?.length > 0 ? (
-                                <div className="flex gap-1 flex-wrap">
-                                  {countryData.regulation_links.map((link, i) => (
-                                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
-                                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-slate-100">
-                                        {link.label} <ExternalLink className="w-3 h-3 ml-1" />
-                                      </Badge>
-                                    </a>
-                                  ))}
-                                </div>
-                              ) : '-'}
-                            </TableCell>
-                            <TableCell>
-                              {countryData?.trade_agreement_links?.length > 0 ? (
-                                <div className="flex gap-1 flex-wrap">
-                                  {countryData.trade_agreement_links.map((link, i) => (
-                                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
-                                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-slate-100">
-                                        {link.label} <ExternalLink className="w-3 h-3 ml-1" />
-                                      </Badge>
-                                    </a>
-                                  ))}
-                                </div>
-                              ) : '-'}
-                            </TableCell>
-                            <TableCell>
-                              {countryData?.government_trade_links?.length > 0 ? (
-                                <div className="flex gap-1 flex-wrap">
-                                  {countryData.government_trade_links.map((link, i) => (
-                                    <a key={i} href={link.url} target="_blank" rel="noopener noreferrer">
-                                      <Badge variant="outline" className="text-xs cursor-pointer hover:bg-slate-100">
-                                        {link.label} <ExternalLink className="w-3 h-3 ml-1" />
-                                      </Badge>
-                                    </a>
-                                  ))}
-                                </div>
-                              ) : '-'}
-                            </TableCell>
-                            <TableCell>
-                              {countryData?.regional_agreements_parties || '-'}
-                            </TableCell>
-                            <TableCell className="max-w-xs">
-                              <div className="truncate" title={countryData?.notes}>
-                                {countryData?.notes || '-'}
-                              </div>
+                              )}
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">

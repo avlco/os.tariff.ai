@@ -44,9 +44,9 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         >
       {/* Logo */}
       <div className={cn(
-        "h-16 flex items-center justify-center border-b",
+        "h-16 flex items-center border-b",
         theme === 'dark' ? "border-slate-800" : "border-gray-100",
-        "px-4"
+        collapsed ? "justify-center px-4" : "justify-between px-4"
       )}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
@@ -61,6 +61,19 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
             </span>
           )}
         </div>
+        {!collapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(true)}
+            className={cn(
+              "h-8 w-8",
+              theme === 'dark' ? "text-slate-400 hover:text-white" : "text-gray-500 hover:text-gray-900"
+            )}
+          >
+            {isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </Button>
+        )}
       </div>
 
 
@@ -105,7 +118,53 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         </ul>
       </nav>
 
+      {/* Bottom Actions */}
+      <div className={cn(
+        "p-2 border-t",
+        theme === 'dark' ? "border-slate-800" : "border-gray-100",
+        "space-y-1"
+      )}>
+        {collapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(false)}
+            className={cn(
+              "w-full",
+              theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+            )}
+          >
+            {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          size={collapsed ? "icon" : "default"}
+          onClick={toggleTheme}
+          className={cn(
+            "w-full",
+            collapsed ? "justify-center" : "justify-start",
+            theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+          )}
+        >
+          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          {!collapsed && <span className={cn("text-sm", isRTL ? "mr-2" : "ml-2")}>{theme === 'dark' ? t('lightMode') : t('darkMode')}</span>}
+        </Button>
 
+        <Button
+          variant="ghost"
+          size={collapsed ? "icon" : "default"}
+          onClick={toggleLanguage}
+          className={cn(
+            "w-full",
+            collapsed ? "justify-center" : "justify-start",
+            theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+          )}
+        >
+          <Languages className="w-5 h-5" />
+          {!collapsed && <span className={cn("text-sm", isRTL ? "mr-2" : "ml-2")}>{language === 'he' ? 'English' : 'עברית'}</span>}
+        </Button>
+      </div>
     </aside>
   );
 }

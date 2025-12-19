@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLanguage } from './LanguageContext';
-import { Bell, Search, User, Sun, Moon, Languages, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
-export default function AdminHeader({ title, user, collapsed, setCollapsed }) {
-  const { t, isRTL, theme, toggleTheme, toggleLanguage } = useLanguage();
+export default function AdminHeader({ title, user }) {
+  const { t, isRTL, theme } = useLanguage();
 
   return (
     <header className={cn(
@@ -26,7 +26,7 @@ export default function AdminHeader({ title, user, collapsed, setCollapsed }) {
         {title}
       </h1>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         {/* Search */}
         <div className="relative hidden md:block">
           <Search className={cn(
@@ -48,46 +48,6 @@ export default function AdminHeader({ title, user, collapsed, setCollapsed }) {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className={cn("w-5 h-5", theme === 'dark' ? "text-slate-400" : "text-gray-600")} />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
-        </Button>
-
-        {/* Sidebar Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-          )}
-        >
-          {collapsed ? (
-            isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />
-          ) : (
-            isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />
-          )}
-        </Button>
-
-        {/* Theme Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-          )}
-        >
-          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </Button>
-
-        {/* Language Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleLanguage}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-          )}
-        >
-          <Languages className="w-5 h-5" />
         </Button>
 
         {/* User Menu */}
