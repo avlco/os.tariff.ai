@@ -61,7 +61,13 @@ function UsersContent() {
   });
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.AppUser.update(id, data),
+    mutationFn: async ({ id, data }) => {
+      const response = await base44.functions.invoke('updateExternalUser', {
+        entityId: id,
+        updateData: data
+      });
+      return response.data;
+    },
     onSuccess: () => queryClient.invalidateQueries(['appUsers'])
   });
 
