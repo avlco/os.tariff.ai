@@ -53,14 +53,14 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         {collapsed ? (
           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm p-1.5">
             <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/41f5aa698_logotariff_ai2.png"
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/80970ea07_tariffailogo.png"
               alt="Tariff.AI"
               className="w-full h-full object-contain"
             />
           </div>
         ) : (
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/41f5aa698_logotariff_ai2.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/80970ea07_tariffailogo.png"
             alt="Tariff.AI"
             className="h-8 object-contain"
           />
