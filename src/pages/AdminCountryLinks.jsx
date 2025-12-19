@@ -178,6 +178,43 @@ function CountryLinksContent() {
     URL.revokeObjectURL(url);
   };
 
+  const parseCSVLine = (line) => {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    let i = 0;
+    
+    while (i < line.length) {
+      const char = line[i];
+      const nextChar = line[i + 1];
+      
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Escaped quote
+          current += '"';
+          i += 2;
+          continue;
+        }
+        inQuotes = !inQuotes;
+        i++;
+        continue;
+      }
+      
+      if (char === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+        i++;
+        continue;
+      }
+      
+      current += char;
+      i++;
+    }
+    
+    result.push(current);
+    return result;
+  };
+
   const handleImport = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -186,8 +223,45 @@ function CountryLinksContent() {
     reader.onload = async (event) => {
       try {
         const text = event.target?.result;
-        const lines = text.split('\n');
-        const rows = lines.slice(1).filter(row => row.trim()); // Skip header and empty lines
+        
+        // Split by newlines but handle quoted newlines
+        const allLines = [];
+        let currentLine = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < text.length; i++) {
+          const char = text[i];
+          const nextChar = text[i + 1];
+          
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              currentLine += '""';
+              i++;
+              continue;
+            }
+            inQuotes = !inQuotes;
+          }
+          
+          if ((char === '\n' || char === '\r') && !inQuotes) {
+            if (currentLine.trim()) {
+              allLines.push(currentLine);
+            }
+            currentLine = '';
+            if (char === '\r' && nextChar === '\n') {
+              i++;
+            }
+            continue;
+          }
+          
+          currentLine += char;
+        }
+        
+        if (currentLine.trim()) {
+          allLines.push(currentLine);
+        }
+        
+        // Remove header
+        const rows = allLines.slice(1);
         
         setImportProgress({
           open: true,
@@ -203,62 +277,46 @@ function CountryLinksContent() {
         
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
-          const rowNumber = i + 2; // +2 because of header and 0-index
+          const rowNumber = i + 2;
           
           try {
-            // Parse CSV properly handling quoted fields
-            const columns = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let j = 0; j < row.length; j++) {
-              const char = row[j];
-              if (char === '"') {
-                inQuotes = !inQuotes;
-              } else if (char === ',' && !inQuotes) {
-                columns.push(current.trim());
-                current = '';
-              } else {
-                current += char;
-              }
-            }
-            columns.push(current.trim());
+            const columns = parseCSVLine(row);
 
             if (columns.length < 9) {
-              errors.push({ row: rowNumber, message: 'מספר עמודות לא תקין' });
+              errors.push({ row: rowNumber, message: `מספר עמודות: ${columns.length} במקום 9` });
               continue;
             }
 
             const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
             
-            if (!country) {
+            if (!country || !country.trim()) {
               errors.push({ row: rowNumber, message: 'שם מדינה חסר' });
               continue;
             }
 
             const parseLinks = (linkStr) => {
-              if (!linkStr) return [];
+              if (!linkStr || !linkStr.trim()) return [];
               return linkStr.split(';').map(link => {
-                const parts = link.split(':');
-                if (parts.length < 2) return null;
-                const label = parts[0].trim();
-                const url = parts.slice(1).join(':').trim();
-                return url ? { label, url } : null;
+                const colonIndex = link.indexOf(':');
+                if (colonIndex === -1) return null;
+                const label = link.substring(0, colonIndex).trim();
+                const url = link.substring(colonIndex + 1).trim();
+                return (label && url) ? { label, url } : null;
               }).filter(Boolean);
             };
 
             const data = {
-              country: country,
-              hs_code_digit_structure: hsCode || '',
+              country: country.trim(),
+              hs_code_digit_structure: hsCode?.trim() || '',
               custom_links: parseLinks(customLinks),
               regulation_links: parseLinks(regLinks),
               trade_agreement_links: parseLinks(tradeLinks),
               government_trade_links: parseLinks(govLinks),
-              regional_agreements_parties: regionalAgreements || '',
-              notes: notes || ''
+              regional_agreements_parties: regionalAgreements?.trim() || '',
+              notes: notes?.trim() || ''
             };
 
-            const existing = countryLinks.find(c => c.country === country);
+            const existing = countryLinks.find(c => c.country === data.country);
             if (existing) {
               await updateMutation.mutateAsync({ id: existing.id, data });
             } else {
@@ -307,7 +365,7 @@ function CountryLinksContent() {
     };
     
     reader.readAsText(file, 'UTF-8');
-    e.target.value = ''; // Reset file input
+    e.target.value = '';
   };
 
   return (
