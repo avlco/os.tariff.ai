@@ -64,8 +64,8 @@ export default function AdminHeader({ title, user }) {
                 <div className={cn("text-xs", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>{user?.email}</div>
               </div>
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white font-semibold shadow-lg ring-2 ring-white/20">
-                  {(user?.full_name || 'A')[0].toUpperCase()}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white shadow-lg ring-2 ring-white/20">
+                  <User className="w-5 h-5" />
                 </div>
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
