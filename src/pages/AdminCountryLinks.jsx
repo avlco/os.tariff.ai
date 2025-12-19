@@ -446,7 +446,7 @@ function CountryLinksContent() {
                       });
                       setIsEditing(true);
                     }}
-                    className="bg-[var(--primary-teal)] hover:bg-[var(--teal-dark)] text-white"
+                    className="bg-[#114B5F] hover:bg-[#0d3a47] text-white shadow-md"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Country
