@@ -33,7 +33,7 @@ import {
 
 function DashboardContent() {
   const { t, theme, isRTL } = useLanguage();
-  const [collapsed, setCollapsed] = useState(false);
+
 
   const { data: users = [] } = useQuery({
     queryKey: ['appUsers'],
@@ -106,7 +106,7 @@ function DashboardContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminDashboard" collapsed={collapsed} setCollapsed={setCollapsed} />
+      <AdminSidebar currentPage="AdminDashboard" />
       
       <div className={cn(
         "transition-all duration-300",

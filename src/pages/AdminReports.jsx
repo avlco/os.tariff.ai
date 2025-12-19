@@ -42,7 +42,7 @@ import { format } from 'date-fns';
 
 function ReportsContent() {
   const { t, theme, isRTL } = useLanguage();
-  const [collapsed, setCollapsed] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedReport, setSelectedReport] = useState(null);
@@ -166,7 +166,7 @@ function ReportsContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminReports" collapsed={collapsed} setCollapsed={setCollapsed} />
+      <AdminSidebar currentPage="AdminReports" />
       
       <div className={cn(
         "transition-all duration-300",

@@ -44,7 +44,7 @@ import {
 
 function AnalyticsContent() {
   const { t, theme, isRTL } = useLanguage();
-  const [collapsed, setCollapsed] = useState(false);
+
   const [timeRange, setTimeRange] = useState('thisWeek');
 
   const { data: events = [] } = useQuery({
@@ -102,7 +102,7 @@ function AnalyticsContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminAnalytics" collapsed={collapsed} setCollapsed={setCollapsed} />
+      <AdminSidebar currentPage="AdminAnalytics" />
       
       <div className={cn(
         "transition-all duration-300",

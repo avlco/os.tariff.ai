@@ -40,7 +40,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 function CommunicationContent() {
   const { t, theme, isRTL } = useLanguage();
-  const [collapsed, setCollapsed] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -132,7 +132,7 @@ function CommunicationContent() {
       theme === 'dark' ? "bg-slate-900" : "bg-gray-50",
       isRTL ? "rtl" : "ltr"
     )}>
-      <AdminSidebar currentPage="AdminCommunication" collapsed={collapsed} setCollapsed={setCollapsed} />
+      <AdminSidebar currentPage="AdminCommunication" />
       
       <div className={cn(
         "transition-all duration-300",
