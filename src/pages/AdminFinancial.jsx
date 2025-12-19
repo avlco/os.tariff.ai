@@ -218,13 +218,13 @@ function FinancialContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             {/* Revenue Trend */}
             <Card className={cn(
-              "lg:col-span-2",
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+              "lg:col-span-2 border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
-                  "text-lg",
-                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  "text-base font-semibold",
+                  theme === 'dark' ? "text-white" : "text-gray-900"
                 )}>
                   Revenue Trend
                 </CardTitle>
@@ -265,12 +265,13 @@ function FinancialContent() {
 
             {/* Revenue by Plan */}
             <Card className={cn(
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+              "border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
-                  "text-lg",
-                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  "text-base font-semibold",
+                  theme === 'dark' ? "text-white" : "text-gray-900"
                 )}>
                   {t('revenueByPlan')}
                 </CardTitle>
@@ -365,12 +366,13 @@ function FinancialContent() {
 
           {/* Recent Transactions */}
           <Card className={cn(
-            theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+            "border",
+            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
           )}>
             <CardHeader>
               <CardTitle className={cn(
-                "text-lg",
-                theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                "text-base font-semibold",
+                theme === 'dark' ? "text-white" : "text-gray-900"
               )}>
                 {t('recentTransactions')}
               </CardTitle>

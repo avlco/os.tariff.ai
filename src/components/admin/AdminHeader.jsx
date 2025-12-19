@@ -46,8 +46,8 @@ export default function AdminHeader({ title, user }) {
 
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className={cn("w-5 h-5", theme === 'dark' ? "text-slate-300" : "text-gray-600")} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-[#D89C42] rounded-full" />
+          <Bell className={cn("w-5 h-5", theme === 'dark' ? "text-slate-400" : "text-gray-600")} />
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full" />
         </Button>
 
         {/* User Menu */}

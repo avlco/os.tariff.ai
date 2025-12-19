@@ -172,13 +172,13 @@ function AnalyticsContent() {
 
           {/* Main Chart */}
           <Card className={cn(
-            "mb-8",
-            theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+            "mb-8 border",
+            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
           )}>
             <CardHeader>
               <CardTitle className={cn(
-                "text-lg",
-                theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                "text-base font-semibold",
+                theme === 'dark' ? "text-white" : "text-gray-900"
               )}>
                 {t('pageViews')} & {t('sessions')}
               </CardTitle>
@@ -233,12 +233,13 @@ function AnalyticsContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Device Breakdown */}
             <Card className={cn(
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+              "border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
-                  "text-lg",
-                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  "text-base font-semibold",
+                  theme === 'dark' ? "text-white" : "text-gray-900"
                 )}>
                   {t('deviceBreakdown')}
                 </CardTitle>
@@ -283,12 +284,13 @@ function AnalyticsContent() {
 
             {/* Top Pages */}
             <Card className={cn(
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+              "border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
-                  "text-lg",
-                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  "text-base font-semibold",
+                  theme === 'dark' ? "text-white" : "text-gray-900"
                 )}>
                   {t('topPages')}
                 </CardTitle>
@@ -325,12 +327,13 @@ function AnalyticsContent() {
 
             {/* Users by Country */}
             <Card className={cn(
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+              "border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
             )}>
               <CardHeader>
                 <CardTitle className={cn(
-                  "text-lg",
-                  theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                  "text-base font-semibold",
+                  theme === 'dark' ? "text-white" : "text-gray-900"
                 )}>
                   {t('usersByCountry')}
                 </CardTitle>
@@ -363,13 +366,13 @@ function AnalyticsContent() {
 
           {/* Traffic Sources */}
           <Card className={cn(
-            "mt-6",
-            theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+            "mt-6 border",
+            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
           )}>
             <CardHeader>
               <CardTitle className={cn(
-                "text-lg",
-                theme === 'dark' ? "text-white" : "text-[#114B5F]"
+                "text-base font-semibold",
+                theme === 'dark' ? "text-white" : "text-gray-900"
               )}>
                 {t('trafficSources')}
               </CardTitle>

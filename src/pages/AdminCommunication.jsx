@@ -148,9 +148,9 @@ function CommunicationContent() {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white",
-              statusFilter === 'all' && "ring-2 ring-[#42C0B9]"
+              "cursor-pointer transition-all hover:shadow-sm border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50",
+              statusFilter === 'all' && "ring-2 ring-indigo-500"
             )} onClick={() => setStatusFilter('all')}>
               <CardContent className="pt-4">
                 <div className="flex items-center justify-between">
@@ -168,8 +168,8 @@ function CommunicationContent() {
             </Card>
 
             <Card className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white",
+              "cursor-pointer transition-all hover:shadow-sm border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50",
               statusFilter === 'open' && "ring-2 ring-blue-500"
             )} onClick={() => setStatusFilter('open')}>
               <CardContent className="pt-4">
@@ -188,8 +188,8 @@ function CommunicationContent() {
             </Card>
 
             <Card className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white",
+              "cursor-pointer transition-all hover:shadow-sm border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50",
               statusFilter === 'in_progress' && "ring-2 ring-yellow-500"
             )} onClick={() => setStatusFilter('in_progress')}>
               <CardContent className="pt-4">
@@ -208,8 +208,8 @@ function CommunicationContent() {
             </Card>
 
             <Card className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white",
+              "cursor-pointer transition-all hover:shadow-sm border",
+              theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50",
               statusFilter === 'resolved' && "ring-2 ring-green-500"
             )} onClick={() => setStatusFilter('resolved')}>
               <CardContent className="pt-4">
@@ -230,8 +230,8 @@ function CommunicationContent() {
 
           {/* Filters */}
           <Card className={cn(
-            "mb-6",
-            theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
+            "mb-6 border",
+            theme === 'dark' ? "bg-slate-800/50 border-slate-700/50" : "bg-white border-gray-200/50"
           )}>
             <CardContent className="pt-4">
               <div className="flex flex-col md:flex-row gap-4">
@@ -294,8 +294,8 @@ function CommunicationContent() {
                 <Card 
                   key={ticket.id}
                   className={cn(
-                    "cursor-pointer transition-all hover:shadow-md",
-                    theme === 'dark' ? "bg-slate-800 border-slate-700 hover:bg-slate-750" : "bg-white hover:bg-gray-50"
+                    "cursor-pointer transition-all hover:shadow-sm border",
+                    theme === 'dark' ? "bg-slate-800/50 border-slate-700/50 hover:bg-slate-800" : "bg-white border-gray-200/50 hover:bg-gray-50"
                   )}
                   onClick={() => setSelectedTicket(ticket)}
                 >
