@@ -228,7 +228,7 @@ function CountryLinksContent() {
         "flex-1 transition-all duration-300",
         collapsed ? (isRTL ? "mr-16" : "ml-16") : (isRTL ? "mr-64" : "ml-64")
       )}>
-        <AdminHeader title={t('countryLinks')} />
+        <AdminHeader title={t('dbLinks')} />
         
         <main className={cn(
           "p-8",

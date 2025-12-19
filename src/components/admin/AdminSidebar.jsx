@@ -29,8 +29,8 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
     { id: 'AdminReports', icon: FileText, label: 'reports' },
     { id: 'AdminAnalytics', icon: BarChart3, label: 'analytics' },
     { id: 'AdminFinancial', icon: DollarSign, label: 'financial' },
+    { id: 'AdminCountryLinks', icon: Globe2, label: 'dbLinks' },
     { id: 'AdminCommunication', icon: MessageSquare, label: 'communication' },
-    { id: 'AdminCountryLinks', icon: Globe2, label: 'countryLinks' },
   ];
 
   return (
@@ -109,48 +109,40 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
       <div className={cn(
         "p-2 border-t",
         theme === 'dark' ? "border-slate-800" : "border-gray-100",
-        "space-y-1"
+        "flex gap-1",
+        collapsed ? "flex-col" : "flex-row justify-center"
       )}>
         <Button
           variant="ghost"
-          size={collapsed ? "icon" : "default"}
+          size="icon"
           onClick={toggleTheme}
           className={cn(
-            "w-full",
-            collapsed ? "justify-center" : "justify-start",
             theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
           )}
         >
           {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          {!collapsed && <span className={cn("text-sm", isRTL ? "mr-2" : "ml-2")}>{theme === 'dark' ? t('lightMode') : t('darkMode')}</span>}
         </Button>
 
         <Button
           variant="ghost"
-          size={collapsed ? "icon" : "default"}
+          size="icon"
           onClick={toggleLanguage}
           className={cn(
-            "w-full",
-            collapsed ? "justify-center" : "justify-start",
             theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
           )}
         >
-          <Languages className="w-5 h-5" />
-          {!collapsed && <span className={cn("text-sm", isRTL ? "mr-2" : "ml-2")}>{language === 'he' ? 'English' : 'עברית'}</span>}
+          <Globe2 className="w-5 h-5" />
         </Button>
 
         <Button
           variant="ghost"
-          size={collapsed ? "icon" : "default"}
+          size="icon"
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "w-full",
-            collapsed ? "justify-center" : "justify-start",
             theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
           )}
         >
           {collapsed ? (isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />) : (isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />)}
-          {!collapsed && <span className={cn("text-sm", isRTL ? "mr-2" : "ml-2")}>כווץ תפריט</span>}
         </Button>
       </div>
     </aside>

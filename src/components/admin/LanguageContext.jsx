@@ -8,8 +8,8 @@ const translations = {
     reports: 'דוחות',
     analytics: 'אנליטיקס',
     financial: 'פיננסי',
+    dbLinks: 'קישורי DB',
     communication: 'תקשורת',
-    countryLinks: 'קישורים למדינות',
     settings: 'הגדרות',
     logout: 'התנתקות',
     
