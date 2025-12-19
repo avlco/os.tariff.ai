@@ -43,6 +43,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
           )}
         >
       {/* Logo */}
+      {/* Logo Section */}
       <div className={cn(
         "h-16 flex items-center justify-center border-b",
         theme === 'dark' ? "border-slate-800" : "border-gray-100",
@@ -61,6 +62,55 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
             </span>
           )}
         </div>
+      </div>
+
+      {/* Control Buttons */}
+      <div className={cn(
+        "p-3 border-b",
+        theme === 'dark' ? "border-slate-800" : "border-gray-100",
+        "flex items-center gap-2",
+        collapsed ? "flex-col" : "justify-center flex-wrap"
+      )}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleTheme}
+          className={cn(
+            "gap-2 text-xs font-medium",
+            collapsed ? "w-full" : "",
+            theme === 'dark' ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          )}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {!collapsed && <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleLanguage}
+          className={cn(
+            "gap-2 text-xs font-medium",
+            collapsed ? "w-full" : "",
+            theme === 'dark' ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          )}
+        >
+          <Globe2 className="w-4 h-4" />
+          {!collapsed && <span>{language === 'he' ? 'EN' : 'עב'}</span>}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setCollapsed(!collapsed)}
+          className={cn(
+            "gap-2 text-xs font-medium",
+            collapsed ? "w-full" : "",
+            theme === 'dark' ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          )}
+        >
+          {collapsed ? (isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />) : (isRTL ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />)}
+        </Button>
       </div>
 
 
@@ -105,46 +155,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         </ul>
       </nav>
 
-      {/* Bottom Actions */}
-      <div className={cn(
-        "p-2 border-t",
-        theme === 'dark' ? "border-slate-800" : "border-gray-100",
-        "flex gap-1",
-        collapsed ? "flex-col" : "flex-row justify-center"
-      )}>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-          )}
-        >
-          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleLanguage}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-          )}
-        >
-          <Globe2 className="w-5 h-5" />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className={cn(
-            theme === 'dark' ? "text-slate-400 hover:text-white hover:bg-slate-800" : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
-          )}
-        >
-          {collapsed ? (isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />) : (isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />)}
-        </Button>
-      </div>
     </aside>
   );
 }
