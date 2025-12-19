@@ -82,11 +82,11 @@ export default function ImportProgressDialog({
                     <span className="font-medium">{errors.length} שגיאות</span>
                   </div>
                   <div className="text-xs max-h-32 overflow-y-auto space-y-1">
-                    {errors.map((error, idx) => (
-                      <div key={idx} className="text-gray-600 dark:text-gray-400">
-                        שורה {error.row}: {error.message}
-                      </div>
-                    ))}
+                   {errors.map((error, idx) => (
+                     <div key={idx} className="text-gray-600 dark:text-gray-400">
+                       <strong>{error.country || `שורה ${error.row}`}</strong>: {error.message}
+                     </div>
+                   ))}
                   </div>
                 </div>
               )}
