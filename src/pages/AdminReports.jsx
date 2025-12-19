@@ -169,12 +169,16 @@ function ReportsContent() {
       <AdminSidebar currentPage="AdminReports" />
       
       <div className={cn(
-        "transition-all duration-300",
-        collapsed ? (isRTL ? "mr-20" : "ml-20") : (isRTL ? "mr-64" : "ml-64")
+        "flex-1 transition-all duration-300",
+        isRTL ? "mr-16" : "ml-16"
       )}>
         <AdminHeader title={t('reportManagement')} />
         
-        <main className="p-6">
+        <main className={cn(
+          "p-8",
+          theme === 'dark' ? "bg-slate-950" : "bg-gray-50",
+          "min-h-screen"
+        )}>
           <Card className={cn(
             theme === 'dark' ? "bg-slate-800 border-slate-700" : "bg-white"
           )}>
