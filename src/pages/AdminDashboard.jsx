@@ -109,12 +109,16 @@ function DashboardContent() {
       <AdminSidebar currentPage="AdminDashboard" />
       
       <div className={cn(
-        "transition-all duration-300",
-        collapsed ? (isRTL ? "mr-20" : "ml-20") : (isRTL ? "mr-64" : "ml-64")
+        "flex-1 transition-all duration-300",
+        isRTL ? "mr-16" : "ml-16"
       )}>
         <AdminHeader title={t('dashboard')} />
         
-        <main className="p-6">
+        <main className={cn(
+          "p-8",
+          theme === 'dark' ? "bg-slate-950" : "bg-gray-50",
+          "min-h-screen"
+        )}>
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatsCard
