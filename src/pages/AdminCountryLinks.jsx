@@ -313,22 +313,27 @@ function CountryLinksContent() {
         let successCount = 0;
         const errors = [];
         
+        // Helper function to delay execution
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
           const rowNumber = i + 2;
+          let countryName = '';
           
           try {
             const columns = parseCSVLine(row);
 
             if (columns.length < 9) {
-              errors.push({ row: rowNumber, message: `מספר עמודות: ${columns.length} במקום 9` });
+              errors.push({ country: 'לא ידוע', message: `מספר עמודות: ${columns.length} במקום 9` });
               continue;
             }
 
             const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
+            countryName = country?.trim() || 'לא ידוע';
             
             if (!country || !country.trim()) {
-              errors.push({ row: rowNumber, message: 'שם מדינה חסר' });
+              errors.push({ country: 'לא ידוע', message: 'שם מדינה חסר' });
               continue;
             }
 
@@ -362,8 +367,15 @@ function CountryLinksContent() {
             }
             
             successCount++;
+            
+            // Add delay to avoid rate limiting (50ms between operations)
+            await delay(50);
           } catch (error) {
-            errors.push({ row: rowNumber, message: error.message || 'שגיאה בייבוא שורה' });
+            const errorMsg = error.message || 'שגיאה בייבוא';
+            errors.push({ 
+              country: countryName, 
+              message: errorMsg.includes('Rate limit') ? 'חריגה ממגבלת קצב - יובא בסיבוב הבא' : errorMsg 
+            });
           }
           
           setImportProgress(prev => ({
