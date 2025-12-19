@@ -44,9 +44,9 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
         >
       {/* Logo */}
       <div className={cn(
-        "h-16 flex items-center border-b",
+        "h-16 flex items-center justify-center border-b",
         theme === 'dark' ? "border-slate-800" : "border-gray-100",
-        collapsed ? "justify-center px-4" : "justify-between px-4"
+        "px-4"
       )}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
@@ -61,7 +61,6 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
             </span>
           )}
         </div>
-
       </div>
 
 
