@@ -45,23 +45,26 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
       {/* Logo */}
       {/* Logo Section */}
       <div className={cn(
-        "h-16 flex items-center justify-center border-b",
+        "h-16 flex items-center border-b",
         theme === 'dark' ? "border-slate-800" : "border-gray-100",
-        "px-4"
+        "px-4",
+        collapsed ? "justify-center" : "justify-start"
       )}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center shadow-lg">
-            <span className="text-white text-xl font-bold">T</span>
+        {collapsed ? (
+          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm p-1.5">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/41f5aa698_logotariff_ai2.png"
+              alt="Tariff.AI"
+              className="w-full h-full object-contain"
+            />
           </div>
-          {!collapsed && (
-            <span className={cn(
-              "text-lg font-semibold",
-              theme === 'dark' ? "text-white" : "text-gray-900"
-            )}>
-              Tariff.AI
-            </span>
-          )}
-        </div>
+        ) : (
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69442549f334f63b00b21e4f/41f5aa698_logotariff_ai2.png"
+            alt="Tariff.AI"
+            className="h-8 object-contain"
+          />
+        )}
       </div>
 
       {/* Control Buttons */}

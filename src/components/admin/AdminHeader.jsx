@@ -53,19 +53,25 @@ export default function AdminHeader({ title, user }) {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 hover:bg-transparent">
+            <Button variant="ghost" className={cn(
+              "flex items-center gap-3 rounded-xl transition-all",
+              theme === 'dark' ? "hover:bg-slate-800" : "hover:bg-gray-100"
+            )}>
               <div className="text-right hidden md:block">
                 <div className={cn("text-sm font-medium", theme === 'dark' ? "text-white" : "text-[#114B5F]")}>
                   {user?.full_name || 'Admin'}
                 </div>
                 <div className={cn("text-xs", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>{user?.email}</div>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white font-medium shadow-md">
-                {(user?.full_name || 'A')[0].toUpperCase()}
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--primary-navy)] to-[var(--primary-teal)] flex items-center justify-center text-white font-semibold shadow-lg ring-2 ring-white/20">
+                  {(user?.full_name || 'A')[0].toUpperCase()}
+                </div>
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={isRTL ? "start" : "end"}>
+          <DropdownMenuContent align={isRTL ? "start" : "end"} className="w-48">
             <DropdownMenuItem>{t('settings')}</DropdownMenuItem>
             <DropdownMenuItem className="text-red-600">{t('logout')}</DropdownMenuItem>
           </DropdownMenuContent>
