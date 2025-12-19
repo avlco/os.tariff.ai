@@ -13,7 +13,9 @@ import {
   Trash2,
   Globe,
   Download,
-  Upload
+  Upload,
+  Square,
+  CheckSquare
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -74,6 +76,7 @@ function CountryLinksContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedCountries, setSelectedCountries] = useState([]);
   const [importProgress, setImportProgress] = useState({
     open: false,
     progress: 0,
@@ -132,6 +135,16 @@ function CountryLinksContent() {
     onSuccess: () => queryClient.invalidateQueries(['countryLinks'])
   });
 
+  const deleteMultipleMutation = useMutation({
+    mutationFn: async (ids) => {
+      await Promise.all(ids.map(id => base44.entities.CountryLink.delete(id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['countryLinks']);
+      setSelectedCountries([]);
+    }
+  });
+
   const handleEdit = (country) => {
     setSelectedCountry(country);
     setFormData(country);
@@ -149,6 +162,31 @@ function CountryLinksContent() {
   const filteredCountries = countries.filter(c => 
     c.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleSelectAll = () => {
+    if (selectedCountries.length === filteredCountries.length) {
+      setSelectedCountries([]);
+    } else {
+      const allCountryIds = filteredCountries
+        .map(country => countryLinks.find(c => c.country === country)?.id)
+        .filter(Boolean);
+      setSelectedCountries(allCountryIds);
+    }
+  };
+
+  const handleSelectCountry = (countryId) => {
+    setSelectedCountries(prev => 
+      prev.includes(countryId) 
+        ? prev.filter(id => id !== countryId)
+        : [...prev, countryId]
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedCountries.length > 0 && confirm(`Delete ${selectedCountries.length} selected countries?`)) {
+      deleteMultipleMutation.mutate(selectedCountries);
+    }
+  };
 
   const handleExport = () => {
     const headers = ['No', 'Country', 'HS-Code Digit Structure', 'Custom Links', 'Regulation Links', 'Trade Agreements Links', 'Government Trade Links', 'Regional Agreements - parties', 'Notes'];
@@ -410,6 +448,16 @@ function CountryLinksContent() {
                   />
                 </div>
                 <div className="flex gap-2">
+                  {selectedCountries.length > 0 && (
+                    <Button 
+                      onClick={handleDeleteSelected}
+                      variant="destructive"
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete ({selectedCountries.length})
+                    </Button>
+                  )}
                   <Button 
                     onClick={handleExport}
                     variant="outline"
@@ -459,6 +507,15 @@ function CountryLinksContent() {
                 <Table>
                   <TableHeader>
                     <TableRow className={theme === 'dark' ? "border-slate-700/50" : "border-gray-200/50"}>
+                      <TableHead className={cn("font-medium text-xs uppercase w-12", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
+                        <button onClick={handleSelectAll} className="hover:opacity-70">
+                          {selectedCountries.length === filteredCountries.filter(c => countryLinks.find(cl => cl.country === c)).length && selectedCountries.length > 0 ? (
+                            <CheckSquare className="w-4 h-4" />
+                          ) : (
+                            <Square className="w-4 h-4" />
+                          )}
+                        </button>
+                      </TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>No</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>Country</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>HS-Code Structure</TableHead>
@@ -485,9 +542,24 @@ function CountryLinksContent() {
                           <TableRow 
                             key={country}
                             className={cn(
-                              theme === 'dark' ? "border-slate-700/50" : "border-gray-200/50"
+                              theme === 'dark' ? "border-slate-700/50" : "border-gray-200/50",
+                              selectedCountries.includes(countryData?.id) && "bg-blue-50 dark:bg-blue-900/20"
                             )}
                           >
+                            <TableCell className="w-12">
+                              {countryData && (
+                                <button 
+                                  onClick={() => handleSelectCountry(countryData.id)}
+                                  className="hover:opacity-70"
+                                >
+                                  {selectedCountries.includes(countryData.id) ? (
+                                    <CheckSquare className="w-4 h-4 text-blue-600" />
+                                  ) : (
+                                    <Square className="w-4 h-4" />
+                                  )}
+                                </button>
+                              )}
+                            </TableCell>
                             <TableCell className="text-sm">{idx + 1}</TableCell>
                             <TableCell className="font-medium">
                               <div className="flex items-center gap-2">
@@ -664,7 +736,7 @@ function CountryLinksContent() {
               <Button variant="outline" onClick={() => setIsEditing(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} className="bg-[var(--primary-teal)] hover:bg-[var(--teal-dark)] text-white">
+              <Button onClick={handleSave} className="bg-[#114B5F] hover:bg-[#0d3a47] text-white shadow-md">
                 Save
               </Button>
             </div>
