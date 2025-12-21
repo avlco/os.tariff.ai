@@ -51,9 +51,8 @@ export default function UserDetailsDialog({ user, open, onOpenChange }) {
     queryKey: ['userReports', user?.user_id],
     queryFn: async () => {
       if (!user?.user_id) return [];
-      const response = await base44.functions.invoke('fetchExternalReports', {});
-      const allReports = response.data || [];
-      return allReports.filter(r => r.user_id === user.user_id);
+      const reports = await base44.entities.Report.list();
+      return reports.filter(r => r.user_id === user.user_id);
     },
     enabled: !!user?.user_id && open
   });
