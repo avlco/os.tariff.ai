@@ -37,49 +37,50 @@ export default function UserDetailsDialog({ user, open, onOpenChange }) {
 
   // Fetch user's shipments
   const { data: shipments = [], isLoading: shipmentsLoading } = useQuery({
-    queryKey: ['userShipments', user?.user_id],
+    queryKey: ['userShipments', user?.email],
     queryFn: async () => {
-      if (!user?.user_id) return [];
-      const response = await base44.functions.invoke('fetchShipments', { customer_id: user.user_id });
-      return response.data || [];
+      if (!user?.email) return [];
+      const response = await base44.functions.invoke('fetchShipments', {});
+      const allShipments = response.data || [];
+      return allShipments.filter(s => s.created_by === user.email);
     },
-    enabled: !!user?.user_id && open
+    enabled: !!user?.email && open
   });
 
   // Fetch user's reports
   const { data: reports = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['userReports', user?.user_id],
+    queryKey: ['userReports', user?.email],
     queryFn: async () => {
-      if (!user?.user_id) return [];
+      if (!user?.email) return [];
       const response = await base44.functions.invoke('fetchExternalReports', {});
       const allReports = response.data || [];
-      return allReports.filter(r => r.user_id === user.user_id);
+      return allReports.filter(r => r.user_email === user.email || r.created_by === user.email);
     },
-    enabled: !!user?.user_id && open
+    enabled: !!user?.email && open
   });
 
   // Fetch user's payments
   const { data: payments = [], isLoading: paymentsLoading } = useQuery({
-    queryKey: ['userPayments', user?.user_id],
+    queryKey: ['userPayments', user?.email],
     queryFn: async () => {
-      if (!user?.user_id) return [];
+      if (!user?.email) return [];
       const response = await base44.functions.invoke('fetchExternalPayments', {});
       const allPayments = response.data || [];
-      return allPayments.filter(p => p.user_id === user.user_id);
+      return allPayments.filter(p => p.user_email === user.email || p.created_by === user.email);
     },
-    enabled: !!user?.user_id && open
+    enabled: !!user?.email && open
   });
 
   // Fetch user's support tickets
   const { data: tickets = [], isLoading: ticketsLoading } = useQuery({
-    queryKey: ['userTickets', user?.user_id],
+    queryKey: ['userTickets', user?.email],
     queryFn: async () => {
-      if (!user?.user_id) return [];
+      if (!user?.email) return [];
       const response = await base44.functions.invoke('fetchExternalTickets', {});
       const allTickets = response.data || [];
-      return allTickets.filter(t => t.user_id === user.user_id);
+      return allTickets.filter(t => t.user_email === user.email || t.created_by === user.email);
     },
-    enabled: !!user?.user_id && open
+    enabled: !!user?.email && open
   });
 
   if (!user) return null;
@@ -272,7 +273,7 @@ export default function UserDetailsDialog({ user, open, onOpenChange }) {
                               {shipment.description || '-'}
                             </p>
                             <p className={cn("text-xs mt-1", theme === 'dark' ? "text-slate-500" : "text-gray-400")}>
-                              {shipment.origin} → {shipment.destination}
+                              {typeof shipment.origin === 'object' ? shipment.origin.country : shipment.origin} → {typeof shipment.destination === 'object' ? shipment.destination.country : shipment.destination}
                             </p>
                           </div>
                           <StatusBadge status={shipment.status} />
