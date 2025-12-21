@@ -87,6 +87,7 @@ function CountryLinksContent() {
   });
   const [formData, setFormData] = useState({
     country: '',
+    tax_method: '',
     hs_code_digit_structure: '',
     custom_links: [],
     regulation_links: [],
@@ -110,6 +111,7 @@ function CountryLinksContent() {
       setIsEditing(false);
       setFormData({
         country: '',
+        tax_method: '',
         hs_code_digit_structure: '',
         custom_links: [],
         regulation_links: [],
@@ -189,13 +191,14 @@ function CountryLinksContent() {
   };
 
   const handleExport = () => {
-    const headers = ['No', 'Country', 'HS-Code Digit Structure', 'Custom Links', 'Regulation Links', 'Trade Agreements Links', 'Government Trade Links', 'Regional Agreements - parties', 'Notes'];
+    const headers = ['No', 'Country', 'Tax Method', 'HS-Code Digit Structure', 'Custom Links', 'Regulation Links', 'Trade Agreements Links', 'Government Trade Links', 'Regional Agreements - parties', 'Notes'];
     
     const csvData = filteredCountries.map((country, idx) => {
       const countryData = countryLinks.find(c => c.country === country);
       return [
         idx + 1,
         country,
+        countryData?.tax_method || '',
         countryData?.hs_code_digit_structure || '',
         countryData?.custom_links?.map(l => `${l.label}: ${l.url}`).join('; ') || '',
         countryData?.regulation_links?.map(l => `${l.label}: ${l.url}`).join('; ') || '',
@@ -324,12 +327,12 @@ function CountryLinksContent() {
           try {
             const columns = parseCSVLine(row);
 
-            if (columns.length < 9) {
-              errors.push({ country: 'לא ידוע', message: `מספר עמודות: ${columns.length} במקום 9` });
+            if (columns.length < 10) {
+              errors.push({ country: 'לא ידוע', message: `מספר עמודות: ${columns.length} במקום 10` });
               continue;
             }
 
-            const [no, country, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
+            const [no, country, taxMethod, hsCode, customLinks, regLinks, tradeLinks, govLinks, regionalAgreements, notes] = columns;
             countryName = country?.trim() || 'לא ידוע';
             
             if (!country || !country.trim()) {
@@ -350,6 +353,7 @@ function CountryLinksContent() {
 
             const data = {
               country: country.trim(),
+              tax_method: taxMethod?.trim() || '',
               hs_code_digit_structure: hsCode?.trim() || '',
               custom_links: parseLinks(customLinks),
               regulation_links: parseLinks(regLinks),
@@ -496,6 +500,7 @@ function CountryLinksContent() {
                       setSelectedCountry(null);
                       setFormData({
                         country: '',
+                        tax_method: '',
                         hs_code_digit_structure: '',
                         custom_links: [],
                         regulation_links: [],
@@ -530,6 +535,7 @@ function CountryLinksContent() {
                       </TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>No</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>Country</TableHead>
+                      <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>Tax Method</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>HS-Code Structure</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>Custom Links</TableHead>
                       <TableHead className={cn("font-medium text-xs uppercase", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>Regulation Links</TableHead>
@@ -543,7 +549,7 @@ function CountryLinksContent() {
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8">
+                        <TableCell colSpan={11} className="text-center py-8">
                           {t('loading')}
                         </TableCell>
                       </TableRow>
@@ -578,6 +584,9 @@ function CountryLinksContent() {
                                 <Globe className="w-4 h-4 text-[var(--primary-teal)]" />
                                 {country}
                               </div>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {countryData?.tax_method || '-'}
                             </TableCell>
                             <TableCell className="text-sm">
                               {countryData?.hs_code_digit_structure || '-'}
@@ -690,6 +699,15 @@ function CountryLinksContent() {
                 value={formData.country}
                 onChange={(e) => setFormData({...formData, country: e.target.value})}
                 disabled={!!selectedCountry}
+                className={theme === 'dark' ? "bg-slate-700 border-slate-600" : ""}
+              />
+            </div>
+            <div>
+              <Label>Tax Method</Label>
+              <Input
+                value={formData.tax_method}
+                onChange={(e) => setFormData({...formData, tax_method: e.target.value})}
+                placeholder="e.g., CIF, FOB"
                 className={theme === 'dark' ? "bg-slate-700 border-slate-600" : ""}
               />
             </div>
