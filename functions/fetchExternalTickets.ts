@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
 
         // Fetch SupportTicket entities from external app
         const response = await fetch(
-            `https://app.base44.com/api/apps/69442ba2ce33e908142d9721/entities/SupportTicket`,
+            `https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/SupportTicket`,
             {
                 headers: {
                     'api_key': apiKey,
@@ -37,15 +37,15 @@ Deno.serve(async (req) => {
         // Map external data structure to internal SupportTicket structure
         const mappedTickets = data.map(ticket => ({
             id: ticket.id,
-            user_id: ticket.user_id,
-            user_email: ticket.user_email,
-            user_name: ticket.user_name,
+            user_id: ticket.created_by,
+            user_email: ticket.created_by,
+            user_name: ticket.created_by,
             subject: ticket.subject,
             category: ticket.category,
             priority: ticket.priority,
             status: ticket.status,
             message: ticket.message,
-            messages: ticket.messages || [],
+            messages: ticket.response ? [{ sender: 'admin', message: ticket.response }] : [],
             assigned_to: ticket.assigned_to,
             resolved_at: ticket.resolved_at,
             created_date: ticket.created_date
