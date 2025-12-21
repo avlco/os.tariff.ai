@@ -23,6 +23,12 @@ export default function StatusBadge({ status, type = 'status' }) {
     resolved: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
     closed: 'bg-gray-50 text-gray-600 border-gray-200/50',
     
+    // Shipment status
+    in_transit: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',
+    customs_clearance: 'bg-[#D89C42]/10 text-[#b8822f] border-[#D89C42]/30',
+    delivered: 'bg-[#42C0B9]/10 text-[#2e9a94] border-[#42C0B9]/30',
+    cancelled: 'bg-red-50 text-red-700 border-red-200/50',
+    
     // Plans
     free: 'bg-gray-50 text-gray-600 border-gray-200/50',
     per_use: 'bg-[#114B5F]/10 text-[#114B5F] border-[#114B5F]/30',

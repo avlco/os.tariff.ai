@@ -96,6 +96,10 @@ const translations = {
     failed: 'נכשל',
     open: 'פתוח',
     closed: 'סגור',
+    in_transit: 'בדרך',
+    customs_clearance: 'מכס',
+    delivered: 'נמסר',
+    cancelled: 'בוטל',
     
     // Plans
     free: 'חינם',
@@ -243,6 +247,10 @@ const translations = {
     failed: 'Failed',
     open: 'Open',
     closed: 'Closed',
+    in_transit: 'In Transit',
+    customs_clearance: 'Customs Clearance',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled',
     
     // Plans
     free: 'Free',
