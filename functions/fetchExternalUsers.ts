@@ -37,17 +37,17 @@ Deno.serve(async (req) => {
         const mappedUsers = users.map(user => ({
             id: user.id,
             user_id: user.id,
-            email: user.user_email || user.email,
-            full_name: user.full_name,
-            company: user.company_name,
-            phone: user.phone,
+            email: user.user_email || user.created_by,
+            full_name: user.full_name || '',
+            company: user.company_name || '',
+            phone: user.phone || '',
             plan: user.subscription_plan || 'free',
             status: user.account_status || 'active',
             reports_this_month: user.reports_used_this_month || 0,
             total_reports: user.total_reports_created || 0,
-            preferred_language: user.preferred_language,
-            last_active: user.last_login,
-            created_date: user.registration_date
+            preferred_language: user.preferred_language || 'he',
+            last_active: user.last_login || user.updated_date,
+            created_date: user.registration_date || user.created_date
         }));
 
         return Response.json(mappedUsers);
