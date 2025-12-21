@@ -50,8 +50,8 @@ function ReportsContent() {
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ['reports'],
     queryFn: async () => {
-      const response = await base44.functions.invoke('fetchExternalReports', {});
-      return response.data || [];
+      const reports = await base44.entities.Report.list();
+      return reports || [];
     }
   });
 
