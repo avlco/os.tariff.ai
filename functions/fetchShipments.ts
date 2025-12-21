@@ -14,7 +14,22 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        const response = await fetch('https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/Shipment', {
+        // Parse request body to get optional customer_id filter
+        let customerId = null;
+        try {
+            const body = await req.json();
+            customerId = body.customer_id;
+        } catch (e) {
+            // No body or invalid JSON - fetch all shipments
+        }
+
+        // Build URL with optional filter
+        let url = 'https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/Shipment';
+        if (customerId) {
+            url += `?filter=${encodeURIComponent(JSON.stringify({ customer_id: customerId }))}`;
+        }
+
+        const response = await fetch(url, {
             headers: {
                 'api_key': apiKey,
                 'Content-Type': 'application/json'

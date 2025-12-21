@@ -6,6 +6,7 @@ import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import DataTable from '@/components/admin/DataTable';
 import StatusBadge from '@/components/admin/StatusBadge';
+import UserDetailsDialog from '@/components/admin/UserDetailsDialog';
 import { cn } from '@/lib/utils';
 import { 
   Search, 
@@ -34,12 +35,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { format } from 'date-fns';
 
 function UsersContent() {
@@ -276,92 +271,11 @@ function UsersContent() {
       </div>
 
       {/* User Details Dialog */}
-      <Dialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-        <DialogContent className={cn(
-          "max-w-2xl",
-          theme === 'dark' ? "bg-slate-800 text-white" : ""
-        )}>
-          <DialogHeader>
-            <DialogTitle>{t('viewDetails')}</DialogTitle>
-          </DialogHeader>
-          {selectedUser && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className={cn(
-                  "w-16 h-16 rounded-full flex items-center justify-center text-2xl text-white font-bold",
-                  "bg-gradient-to-br from-[#114B5F] to-[#42C0B9]"
-                )}>
-                  {(selectedUser.full_name || selectedUser.email || '?')[0].toUpperCase()}
-                </div>
-                <div>
-                  <h3 className={cn(
-                    "text-xl font-bold",
-                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
-                  )}>{selectedUser.full_name || '-'}</h3>
-                  <p className={theme === 'dark' ? "text-slate-400" : "text-gray-500"}>
-                    {selectedUser.email}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('plan')}
-                  </p>
-                  <StatusBadge status={selectedUser.plan} />
-                </div>
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('status')}
-                  </p>
-                  <StatusBadge status={selectedUser.status} />
-                </div>
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('totalReports')}
-                  </p>
-                  <p className={cn(
-                    "font-medium",
-                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
-                  )}>{selectedUser.total_reports || 0}</p>
-                </div>
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('reportsUsed')}
-                  </p>
-                  <p className={cn(
-                    "font-medium",
-                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
-                  )}>{selectedUser.reports_this_month || 0}</p>
-                </div>
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('createdAt')}
-                  </p>
-                  <p className={cn(
-                    "font-medium",
-                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
-                  )}>
-                    {selectedUser.created_date ? format(new Date(selectedUser.created_date), 'dd/MM/yyyy') : '-'}
-                  </p>
-                </div>
-                <div>
-                  <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
-                    {t('lastActive')}
-                  </p>
-                  <p className={cn(
-                    "font-medium",
-                    theme === 'dark' ? "text-white" : "text-[#114B5F]"
-                  )}>
-                    {selectedUser.last_active ? format(new Date(selectedUser.last_active), 'dd/MM/yyyy HH:mm') : '-'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <UserDetailsDialog 
+        user={selectedUser}
+        open={!!selectedUser}
+        onOpenChange={() => setSelectedUser(null)}
+      />
     </div>
   );
 }
