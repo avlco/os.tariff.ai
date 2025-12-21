@@ -41,12 +41,15 @@ function ShipmentsContent() {
     }
   });
 
-  const filteredShipments = shipments.filter(shipment => 
-    shipment.shipment_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    shipment.customer_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    shipment.origin?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    shipment.destination?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredShipments = shipments.filter(shipment => {
+    const originStr = typeof shipment.origin === 'object' ? shipment.origin.country : shipment.origin;
+    const destStr = typeof shipment.destination === 'object' ? shipment.destination.country : shipment.destination;
+    
+    return shipment.shipment_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      shipment.customer_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      originStr?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      destStr?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const handleViewDetails = (shipment) => {
     setSelectedShipment(shipment);
@@ -150,8 +153,14 @@ function ShipmentsContent() {
                           <TableCell>
                             <StatusBadge status={shipment.status} />
                           </TableCell>
-                          <TableCell className="text-sm">{shipment.origin || '-'}</TableCell>
-                          <TableCell className="text-sm">{shipment.destination || '-'}</TableCell>
+                          <TableCell className="text-sm">
+                            {shipment.origin ? 
+                              (typeof shipment.origin === 'object' ? shipment.origin.country : shipment.origin) : '-'}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {shipment.destination ? 
+                              (typeof shipment.destination === 'object' ? shipment.destination.country : shipment.destination) : '-'}
+                          </TableCell>
                           <TableCell className="text-sm font-mono">{shipment.hs_code || '-'}</TableCell>
                           <TableCell className="text-sm">
                             {shipment.total_product_value ? 
@@ -216,15 +225,30 @@ function ShipmentsContent() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">מקור</label>
-                  <p className="text-sm mt-1">{selectedShipment.origin || '-'}</p>
+                  <p className="text-sm mt-1">
+                    {selectedShipment.origin ? 
+                      (typeof selectedShipment.origin === 'object' ? 
+                        `${selectedShipment.origin.country}${selectedShipment.origin.city ? `, ${selectedShipment.origin.city}` : ''}` : 
+                        selectedShipment.origin) : '-'}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">יעד</label>
-                  <p className="text-sm mt-1">{selectedShipment.destination || '-'}</p>
+                  <p className="text-sm mt-1">
+                    {selectedShipment.destination ? 
+                      (typeof selectedShipment.destination === 'object' ? 
+                        `${selectedShipment.destination.country}${selectedShipment.destination.city ? `, ${selectedShipment.destination.city}` : ''}` : 
+                        selectedShipment.destination) : '-'}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">מדינת ייצור</label>
-                  <p className="text-sm mt-1">{selectedShipment.manufacture_country || '-'}</p>
+                  <p className="text-sm mt-1">
+                    {selectedShipment.manufacture_country ? 
+                      (typeof selectedShipment.manufacture_country === 'object' ? 
+                        selectedShipment.manufacture_country.country : 
+                        selectedShipment.manufacture_country) : '-'}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Incoterms</label>

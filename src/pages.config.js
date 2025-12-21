@@ -4,8 +4,8 @@ import AdminCountryLinks from './pages/AdminCountryLinks';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminFinancial from './pages/AdminFinancial';
 import AdminReports from './pages/AdminReports';
-import AdminUsers from './pages/AdminUsers';
 import AdminShipments from './pages/AdminShipments';
+import AdminUsers from './pages/AdminUsers';
 import __Layout from './Layout.jsx';
 
 
@@ -16,8 +16,8 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AdminFinancial": AdminFinancial,
     "AdminReports": AdminReports,
-    "AdminUsers": AdminUsers,
     "AdminShipments": AdminShipments,
+    "AdminUsers": AdminUsers,
 }
 
 export const pagesConfig = {
