@@ -224,8 +224,23 @@ function AnalyticsContent() {
             </div>
 
             <TabsContent value="website">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <Tabs defaultValue="base44" className="w-full">
+                <TabsList className={cn(
+                  "grid w-[400px] grid-cols-2 mb-6",
+                  theme === 'dark' ? "bg-slate-800" : ""
+                )}>
+                  <TabsTrigger value="base44">
+                    Base44 Analytics
+                  </TabsTrigger>
+                  <TabsTrigger value="google">
+                    <Globe className="w-4 h-4 mr-2" />
+                    Google Analytics
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="base44">
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <StatsCard
                   title={t('pageViews')}
                   value={pageViews.toLocaleString()}
@@ -482,9 +497,25 @@ function AnalyticsContent() {
                   />
                   <Bar dataKey="value" fill="#42C0B9" radius={[0, 4, 4, 0]} />
                 </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="google">
+                  <div className="flex items-center justify-center h-96">
+                    <div className="text-center">
+                      <Globe className={cn("w-16 h-16 mx-auto mb-4", theme === 'dark' ? "text-slate-600" : "text-gray-300")} />
+                      <h3 className={cn("text-xl font-semibold mb-2", theme === 'dark' ? "text-white" : "text-gray-900")}>
+                        Google Analytics Integration
+                      </h3>
+                      <p className={cn("text-sm", theme === 'dark' ? "text-slate-400" : "text-gray-500")}>
+                        התחבר ל-Google Analytics כדי לראות נתונים מפורטים על תעבורת האתר
+                      </p>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </TabsContent>
 
             <TabsContent value="app">
