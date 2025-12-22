@@ -16,21 +16,20 @@ Deno.serve(async (req) => {
 
         const appId = '6943f4e2bf8334936af2edbc';
 
-        // Fetch data from all analytics entities
-        const [pageViewsResponse, userActionsResponse, conversionsResponse] = await Promise.all([
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/PageView`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            }),
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/UserAction`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            }),
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/Conversion`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            })
-        ]);
-
+        // Fetch data from all analytics entities sequentially to avoid rate limits
+        const pageViewsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/PageView`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const pageViews = pageViewsResponse.ok ? await pageViewsResponse.json() : [];
+
+        const userActionsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/UserAction`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const userActions = userActionsResponse.ok ? await userActionsResponse.json() : [];
+
+        const conversionsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/Conversion`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const conversions = conversionsResponse.ok ? await conversionsResponse.json() : [];
 
         // Map and unify all events into ArchivedAnalyticsEvent format
@@ -83,16 +82,20 @@ Deno.serve(async (req) => {
             }))
         ];
 
-        // Archive the unified events asynchronously
+        // Archive the unified events in batches to avoid rate limits
         try {
-            const archivePromises = allEvents.map(event => 
-                base44.asServiceRole.entities.ArchivedAnalyticsEvent.create({
-                    ...event,
-                    archived_date: new Date().toISOString(),
-                    original_created_date: event.created_date
-                })
-            );
-            await Promise.all(archivePromises);
+            const batchSize = 10;
+            for (let i = 0; i < allEvents.length; i += batchSize) {
+                const batch = allEvents.slice(i, i + batchSize);
+                const archivePromises = batch.map(event => 
+                    base44.asServiceRole.entities.ArchivedAnalyticsEvent.create({
+                        ...event,
+                        archived_date: new Date().toISOString(),
+                        original_created_date: event.created_date
+                    })
+                );
+                await Promise.all(archivePromises);
+            }
             console.log(`Archived ${allEvents.length} analytics events (${pageViews.length} page views, ${userActions.length} actions, ${conversions.length} conversions)`);
         } catch (archiveError) {
             console.error('Error archiving analytics events:', archiveError);
