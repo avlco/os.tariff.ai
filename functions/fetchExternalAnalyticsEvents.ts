@@ -14,41 +14,92 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        const response = await fetch(`https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/AnalyticsEvent`, {
-            headers: {
-                'api_key': apiKey,
-                'Content-Type': 'application/json'
-            }
-        });
+        const appId = '6943f4e2bf8334936af2edbc';
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('External API error:', response.status, errorText);
-            return Response.json({ 
-                error: 'Failed to fetch analytics events from external app',
-                details: errorText 
-            }, { status: response.status });
-        }
+        // Fetch data from all analytics entities
+        const [pageViewsResponse, userActionsResponse, conversionsResponse] = await Promise.all([
+            fetch(`https://app.base44.com/api/apps/${appId}/entities/PageView`, {
+                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+            }),
+            fetch(`https://app.base44.com/api/apps/${appId}/entities/UserAction`, {
+                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+            }),
+            fetch(`https://app.base44.com/api/apps/${appId}/entities/Conversion`, {
+                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+            })
+        ]);
 
-        const events = await response.json();
-        
-        // Archive the data asynchronously
+        const pageViews = pageViewsResponse.ok ? await pageViewsResponse.json() : [];
+        const userActions = userActionsResponse.ok ? await userActionsResponse.json() : [];
+        const conversions = conversionsResponse.ok ? await conversionsResponse.json() : [];
+
+        // Map and unify all events into ArchivedAnalyticsEvent format
+        const allEvents = [
+            ...pageViews.map(pv => ({
+                event_type: 'page_view',
+                user_id: pv.user_id,
+                page: pv.page_url,
+                platform: 'web',
+                device_type: pv.device_type,
+                country: pv.country,
+                metadata: {
+                    page_title: pv.page_title,
+                    referrer: pv.referrer,
+                    browser: pv.browser,
+                    os: pv.os,
+                    session_id: pv.session_id
+                },
+                created_date: pv.created_date
+            })),
+            ...userActions.map(ua => ({
+                event_type: ua.action_type,
+                user_id: ua.user_id,
+                page: ua.page_url,
+                platform: 'web',
+                device_type: null,
+                country: null,
+                metadata: {
+                    action_name: ua.action_name,
+                    element_id: ua.element_id,
+                    element_text: ua.element_text,
+                    session_id: ua.session_id
+                },
+                created_date: ua.created_date
+            })),
+            ...conversions.map(c => ({
+                event_type: c.conversion_type,
+                user_id: c.user_id,
+                page: c.page_url,
+                platform: 'web',
+                device_type: null,
+                country: null,
+                metadata: {
+                    conversion_name: c.conversion_name,
+                    value: c.value,
+                    currency: c.currency,
+                    session_id: c.session_id
+                },
+                created_date: c.created_date
+            }))
+        ];
+
+        // Archive the unified events asynchronously
         try {
-            const archivePromises = events.map(record => 
+            const archivePromises = allEvents.map(event => 
                 base44.asServiceRole.entities.ArchivedAnalyticsEvent.create({
-                    ...record,
+                    ...event,
                     archived_date: new Date().toISOString(),
-                    original_created_date: record.created_date
+                    original_created_date: event.created_date
                 })
             );
             await Promise.all(archivePromises);
-            console.log(`Archived ${events.length} analytics events`);
+            console.log(`Archived ${allEvents.length} analytics events (${pageViews.length} page views, ${userActions.length} actions, ${conversions.length} conversions)`);
         } catch (archiveError) {
             console.error('Error archiving analytics events:', archiveError);
             // Continue even if archiving fails
         }
         
-        return Response.json(events);
+        return Response.json(allEvents);
     } catch (error) {
         console.error('Error fetching analytics events:', error);
         return Response.json({ error: error.message }, { status: 500 });

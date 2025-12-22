@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
             const archivePromises = data.map(record => 
                 base44.asServiceRole.entities.ArchivedPageView.create({
                     ...record,
+                    page: record.page_url, // Map page_url to page
                     archived_date: new Date().toISOString(),
                     original_created_date: record.created_date
                 })
