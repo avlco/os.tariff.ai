@@ -34,6 +34,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@/components/ui/tabs';
+import AnalyticsRawDataTable from '@/components/admin/AnalyticsRawDataTable';
 import {
   LineChart,
   Line,
@@ -79,6 +80,7 @@ function AnalyticsContent() {
   const [collapsed, setCollapsed] = useState(false);
   const [timeRange, setTimeRange] = useState('thisWeek');
   const [activeTab, setActiveTab] = useState('website');
+  const [activeBase44Tab, setActiveBase44Tab] = useState('visual');
 
   const { data: externalEvents = [], isLoading } = useQuery({
     queryKey: ['externalAnalyticsEvents'],
@@ -321,8 +323,22 @@ function AnalyticsContent() {
                 </TabsList>
 
                 <TabsContent value="base44">
-                  {/* Stats Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <Tabs value={activeBase44Tab} onValueChange={setActiveBase44Tab} className="w-full">
+                    <TabsList className={cn(
+                      "grid w-[400px] grid-cols-2 mb-6",
+                      theme === 'dark' ? "bg-slate-800" : ""
+                    )}>
+                      <TabsTrigger value="visual">
+                        {t('visualAnalytics')}
+                      </TabsTrigger>
+                      <TabsTrigger value="raw-data">
+                        {t('rawData')}
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="visual">
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <StatsCard
                       title={t('pageViews')}
                       value={base44TotalPageViews.toLocaleString()}
@@ -590,6 +606,17 @@ function AnalyticsContent() {
                       </ResponsiveContainer>
                     </CardContent>
                   </Card>
+                    </TabsContent>
+
+                    <TabsContent value="raw-data">
+                      <AnalyticsRawDataTable
+                        filteredPageViews={filteredPageViews}
+                        filteredUserActions={filteredUserActions}
+                        filteredConversions={filteredConversions}
+                        filteredExternalEvents={filteredExternalEvents}
+                      />
+                    </TabsContent>
+                  </Tabs>
                 </TabsContent>
 
                 <TabsContent value="google">
