@@ -435,7 +435,7 @@ function AnalyticsContent() {
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie
-                      data={deviceData}
+                      data={base44DeviceData.filter(d => d.value > 0).length > 0 ? base44DeviceData : deviceData}
                       cx="50%"
                       cy="50%"
                       innerRadius={50}
@@ -443,7 +443,7 @@ function AnalyticsContent() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {deviceData.map((entry, index) => (
+                      {(base44DeviceData.filter(d => d.value > 0).length > 0 ? base44DeviceData : deviceData).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
@@ -451,7 +451,7 @@ function AnalyticsContent() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex justify-center gap-6 mt-4">
-                  {deviceData.map((item, idx) => (
+                  {(base44DeviceData.filter(d => d.value > 0).length > 0 ? base44DeviceData : deviceData).map((item, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <div 
                         className="w-3 h-3 rounded-full"
@@ -461,7 +461,7 @@ function AnalyticsContent() {
                         "text-sm",
                         theme === 'dark' ? "text-slate-300" : "text-gray-600"
                       )}>
-                        {item.name} ({item.value}%)
+                        {item.name} ({item.value > 0 ? item.value : `${item.value}%`})
                       </span>
                     </div>
                   ))}
@@ -484,10 +484,14 @@ function AnalyticsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {topPages.map((page, idx) => (
+                  {(base44TopPages.length > 0 ? base44TopPages.map(([page, views]) => ({
+                    page, 
+                    views, 
+                    percentage: base44TotalPageViews > 0 ? (views / base44TotalPageViews * 100) : 0
+                  })) : topPages).map((page, idx) => (
                     <div key={idx}>
                       <div className="flex justify-between mb-1">
-                        <span className={theme === 'dark' ? "text-slate-300" : "text-gray-700"}>
+                        <span className={cn("text-sm truncate max-w-[180px]", theme === 'dark' ? "text-slate-300" : "text-gray-700")}>
                           {page.page}
                         </span>
                         <span className={cn(
@@ -527,7 +531,11 @@ function AnalyticsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {countryData.map((country, idx) => (
+                  {(base44TopCountries.length > 0 ? base44TopCountries.map(([country, users]) => ({
+                    country,
+                    users,
+                    flag: '🌍'
+                  })) : countryData).map((country, idx) => (
                     <div 
                       key={idx}
                       className="flex items-center justify-between"
