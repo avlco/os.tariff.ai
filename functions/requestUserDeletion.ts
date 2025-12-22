@@ -16,10 +16,12 @@ Deno.serve(async (req) => {
         });
 
         // Send notification email to admin
-        try {
-            await base44.integrations.Core.SendEmail({
-                to: 'admin@tariff.ai',
-                subject: 'User Deletion Request',
+        const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
+        if (adminEmail) {
+            try {
+                await base44.integrations.Core.SendEmail({
+                    to: adminEmail,
+                    subject: 'User Deletion Request',
                 body: `
                     User has requested account deletion:
                     
@@ -31,9 +33,10 @@ Deno.serve(async (req) => {
                     Please review and process this request through the admin panel.
                     Use the anonymizeUserData function to complete the anonymization process.
                 `
-            });
-        } catch (emailError) {
-            console.error('Failed to send admin notification:', emailError);
+                });
+            } catch (emailError) {
+                console.error('Failed to send admin notification:', emailError);
+            }
         }
 
         return Response.json({
