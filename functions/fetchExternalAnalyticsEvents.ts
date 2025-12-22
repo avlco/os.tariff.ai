@@ -16,21 +16,26 @@ Deno.serve(async (req) => {
 
         const appId = '6943f4e2bf8334936af2edbc';
 
-        // Fetch data from all analytics entities
-        const [pageViewsResponse, userActionsResponse, conversionsResponse] = await Promise.all([
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/PageView`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            }),
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/UserAction`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            }),
-            fetch(`https://app.base44.com/api/apps/${appId}/entities/Conversion`, {
-                headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
-            })
-        ]);
-
+        // Fetch data from all analytics entities sequentially to avoid rate limits
+        const pageViewsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/PageView`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const pageViews = pageViewsResponse.ok ? await pageViewsResponse.json() : [];
+
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const userActionsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/UserAction`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const userActions = userActionsResponse.ok ? await userActionsResponse.json() : [];
+
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const conversionsResponse = await fetch(`https://app.base44.com/api/apps/${appId}/entities/Conversion`, {
+            headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
+        });
         const conversions = conversionsResponse.ok ? await conversionsResponse.json() : [];
 
         // Map and unify all events into ArchivedAnalyticsEvent format
