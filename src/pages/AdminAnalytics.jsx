@@ -88,11 +88,93 @@ function AnalyticsContent() {
     }
   });
 
+  const { data: base44PageViews = [] } = useQuery({
+    queryKey: ['base44PageViews'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchBase44PageViews', {});
+      return response.data || [];
+    }
+  });
+
+  const { data: base44UserActions = [] } = useQuery({
+    queryKey: ['base44UserActions'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchBase44UserActions', {});
+      return response.data || [];
+    }
+  });
+
+  const { data: base44Conversions = [] } = useQuery({
+    queryKey: ['base44Conversions'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('fetchBase44Conversions', {});
+      return response.data || [];
+    }
+  });
+
   const filteredExternalEvents = filterEventsByTimeRange(externalEvents, timeRange);
+  const filteredPageViews = filterEventsByTimeRange(base44PageViews, timeRange);
+  const filteredUserActions = filterEventsByTimeRange(base44UserActions, timeRange);
+  const filteredConversions = filterEventsByTimeRange(base44Conversions, timeRange);
 
   const websiteEvents = filteredExternalEvents.filter(e => e.event_type === 'page_view');
   const pageViews = websiteEvents.length;
   const sessions = new Set(websiteEvents.map(e => e.user_id)).size;
+
+  // Base44 Analytics Stats
+  const base44TotalPageViews = filteredPageViews.length;
+  const base44UniqueSessions = new Set(filteredPageViews.map(pv => pv.session_id)).size;
+  const base44TotalActions = filteredUserActions.length;
+  const base44TotalConversions = filteredConversions.length;
+  const base44ConversionRate = base44UniqueSessions > 0 ? ((base44TotalConversions / base44UniqueSessions) * 100).toFixed(1) : '0.0';
+
+  // Device breakdown for Base44
+  const base44DeviceBreakdown = filteredPageViews.reduce((acc, pv) => {
+    const device = pv.device_type || 'unknown';
+    acc[device] = (acc[device] || 0) + 1;
+    return acc;
+  }, {});
+
+  const base44DeviceData = [
+    { name: 'Desktop', value: base44DeviceBreakdown.desktop || 0, color: '#114B5F' },
+    { name: 'Mobile', value: base44DeviceBreakdown.mobile || 0, color: '#42C0B9' },
+    { name: 'Tablet', value: base44DeviceBreakdown.tablet || 0, color: '#D89C42' },
+  ];
+
+  // Top pages for Base44
+  const base44TopPages = Object.entries(
+    filteredPageViews.reduce((acc, pv) => {
+      const page = pv.page_url || 'Unknown';
+      acc[page] = (acc[page] || 0) + 1;
+      return acc;
+    }, {})
+  ).sort(([, a], [, b]) => b - a).slice(0, 5);
+
+  // Country breakdown for Base44
+  const base44TopCountries = Object.entries(
+    filteredPageViews.reduce((acc, pv) => {
+      const country = pv.country || 'Unknown';
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {})
+  ).sort(([, a], [, b]) => b - a).slice(0, 5);
+
+  // Daily traffic for Base44
+  const base44DailyStats = filteredPageViews.reduce((acc, pv) => {
+    const date = format(new Date(pv.created_date), 'EEE');
+    if (!acc[date]) {
+      acc[date] = { views: 0, sessions: new Set() };
+    }
+    acc[date].views++;
+    acc[date].sessions.add(pv.session_id);
+    return acc;
+  }, {});
+
+  const base44TrafficChartData = Object.keys(base44DailyStats).map(day => ({
+    name: day,
+    views: base44DailyStats[day].views,
+    sessions: base44DailyStats[day].sessions.size,
+  }));
 
   const appEvents = filteredExternalEvents.filter(e => 
     ['report_created', 'user_signup', 'payment', 'upgrade', 'support_ticket'].includes(e.event_type)
@@ -241,39 +323,39 @@ function AnalyticsContent() {
                 <TabsContent value="base44">
                   {/* Stats Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatsCard
-                  title={t('pageViews')}
-                  value={pageViews.toLocaleString()}
-                  icon={Eye}
-                  trend="up"
-                  trendValue="+15%"
-                  color="navy"
-                />
-                <StatsCard
-                  title={t('sessions')}
-                  value={sessions.toLocaleString()}
-                  icon={Users}
-                  trend="up"
-                  trendValue="+12%"
-                  color="teal"
-                />
-                <StatsCard
-                  title={t('conversionRate')}
-                  value="4.8%"
-                  icon={TrendingUp}
-                  trend="up"
-                  trendValue="+2.1%"
-                  color="gold"
-                />
-                <StatsCard
-                  title={t('avgSessionDuration')}
-                  value="3m 42s"
-                  icon={Clock}
-                  trend="down"
-                  trendValue="-8%"
-                  color="navy"
-                />
-              </div>
+                    <StatsCard
+                      title={t('pageViews')}
+                      value={base44TotalPageViews.toLocaleString()}
+                      icon={Eye}
+                      trend="up"
+                      trendValue="+15%"
+                      color="navy"
+                    />
+                    <StatsCard
+                      title={t('sessions')}
+                      value={base44UniqueSessions.toLocaleString()}
+                      icon={Users}
+                      trend="up"
+                      trendValue="+12%"
+                      color="teal"
+                    />
+                    <StatsCard
+                      title={t('conversionRate')}
+                      value={`${base44ConversionRate}%`}
+                      icon={TrendingUp}
+                      trend="up"
+                      trendValue="+2.1%"
+                      color="gold"
+                    />
+                    <StatsCard
+                      title="פעולות משתמש"
+                      value={base44TotalActions.toLocaleString()}
+                      icon={Clock}
+                      trend="up"
+                      trendValue="+8%"
+                      color="navy"
+                    />
+                  </div>
 
               {/* Main Chart */}
               <Card className={cn(
@@ -290,7 +372,7 @@ function AnalyticsContent() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={350}>
-                    <AreaChart data={websiteTrafficChartData.length > 0 ? websiteTrafficChartData : trafficData}>
+                    <AreaChart data={base44TrafficChartData.length > 0 ? base44TrafficChartData : trafficData}>
                   <defs>
                     <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#114B5F" stopOpacity={0.3}/>
