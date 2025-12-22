@@ -35,30 +35,29 @@ export default function AnalyticsRawDataTable({
       try {
         const schema = await base44.entities[selectedEntityType].schema();
         const newColumns = Object.keys(schema.properties).map(key => ({
-          accessorKey: key,
-          header: key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()),
-          cell: ({ getValue }) => {
-            const value = getValue();
+          key: key,
+          label: key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()),
+          render: (value) => {
             if (typeof value === 'object' && value !== null) {
               return JSON.stringify(value);
             }
-            return String(value || '');
+            return String(value || '-');
           }
         }));
         
         newColumns.unshift(
-          { accessorKey: 'id', header: 'ID' },
+          { key: 'id', label: 'ID', render: (value) => value || '-' },
           { 
-            accessorKey: 'created_date', 
-            header: 'Created Date', 
-            cell: ({ getValue }) => new Date(getValue()).toLocaleString() 
+            key: 'created_date', 
+            label: 'Created Date', 
+            render: (value) => value ? new Date(value).toLocaleString() : '-'
           },
           { 
-            accessorKey: 'updated_date', 
-            header: 'Updated Date', 
-            cell: ({ getValue }) => new Date(getValue()).toLocaleString() 
+            key: 'updated_date', 
+            label: 'Updated Date', 
+            render: (value) => value ? new Date(value).toLocaleString() : '-'
           },
-          { accessorKey: 'created_by', header: 'Created By' }
+          { key: 'created_by', label: 'Created By', render: (value) => value || '-' }
         );
 
         setColumns(newColumns);
@@ -98,8 +97,7 @@ export default function AnalyticsRawDataTable({
       <DataTable
         columns={columns}
         data={currentData}
-        isLoading={false}
-        noDataMessage={t('noData')}
+        loading={false}
       />
     </div>
   );
