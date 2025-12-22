@@ -26,6 +26,23 @@ Deno.serve(async (req) => {
         }
 
         const data = await response.json();
+        
+        // Archive the data asynchronously
+        try {
+            const archivePromises = data.map(record => 
+                base44.asServiceRole.entities.ArchivedConversion.create({
+                    ...record,
+                    archived_date: new Date().toISOString(),
+                    original_created_date: record.created_date
+                })
+            );
+            await Promise.all(archivePromises);
+            console.log(`Archived ${data.length} conversions`);
+        } catch (archiveError) {
+            console.error('Error archiving conversions:', archiveError);
+            // Continue even if archiving fails
+        }
+        
         return Response.json(data);
     } catch (error) {
         console.error('Error fetching conversions:', error);

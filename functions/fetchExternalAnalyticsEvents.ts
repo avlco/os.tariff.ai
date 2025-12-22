@@ -31,6 +31,23 @@ Deno.serve(async (req) => {
         }
 
         const events = await response.json();
+        
+        // Archive the data asynchronously
+        try {
+            const archivePromises = events.map(record => 
+                base44.asServiceRole.entities.ArchivedAnalyticsEvent.create({
+                    ...record,
+                    archived_date: new Date().toISOString(),
+                    original_created_date: record.created_date
+                })
+            );
+            await Promise.all(archivePromises);
+            console.log(`Archived ${events.length} analytics events`);
+        } catch (archiveError) {
+            console.error('Error archiving analytics events:', archiveError);
+            // Continue even if archiving fails
+        }
+        
         return Response.json(events);
     } catch (error) {
         console.error('Error fetching analytics events:', error);
