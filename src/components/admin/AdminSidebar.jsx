@@ -16,7 +16,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Package
+  Package,
+  Scale
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,7 @@ export default function AdminSidebar({ currentPage, collapsed, setCollapsed }) {
     { id: 'AdminFinancial', icon: DollarSign, label: 'financial' },
     { id: 'AdminCountryLinks', icon: Globe2, label: 'dbLinks' },
     { id: 'AdminCommunication', icon: MessageSquare, label: 'communication' },
+    { id: 'AdminLegal', icon: Scale, label: 'legalPolicies' },
   ];
 
   return (

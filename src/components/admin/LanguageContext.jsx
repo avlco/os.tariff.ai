@@ -152,6 +152,21 @@ const translations = {
     language: 'שפה',
     hebrew: 'עברית',
     english: 'English',
+    
+    // Legal Policy Manager
+    legalPolicyManager: 'ניהול מדיניות משפטית',
+    publishNewVersion: 'פרסום גרסה חדשה',
+    versionHistory: 'היסטוריית גרסאות',
+    versionNumber: 'מספר גרסה',
+    changeSummary: 'סיכום שינויים',
+    contentHtml: 'תוכן HTML',
+    describeChanges: 'תאר את השינויים בגרסה זו...',
+    publishVersion: 'פרסם גרסה',
+    publishing: 'מפרסם...',
+    version: 'גרסה',
+    viewContent: 'הצג תוכן',
+    noVersionsYet: 'לא פורסמו גרסאות עדיין',
+    fillRequiredFields: 'נא למלא את כל השדות הנדרשים',
   },
   en: {
     // Navigation
