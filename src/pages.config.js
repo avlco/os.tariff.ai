@@ -6,7 +6,6 @@ import AdminFinancial from './pages/AdminFinancial';
 import AdminReports from './pages/AdminReports';
 import AdminShipments from './pages/AdminShipments';
 import AdminUsers from './pages/AdminUsers';
-import AdminLegal from './pages/AdminLegal';
 import __Layout from './Layout.jsx';
 
 
@@ -19,7 +18,6 @@ export const PAGES = {
     "AdminReports": AdminReports,
     "AdminShipments": AdminShipments,
     "AdminUsers": AdminUsers,
-    "AdminLegal": AdminLegal,
 }
 
 export const pagesConfig = {

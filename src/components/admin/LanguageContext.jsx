@@ -11,7 +11,6 @@ const translations = {
     financial: 'פיננסי',
     dbLinks: 'קישורי DB',
     communication: 'תקשורת',
-    legalPolicies: 'מדיניות משפטית',
     settings: 'הגדרות',
     logout: 'התנתקות',
     
@@ -152,21 +151,6 @@ const translations = {
     language: 'שפה',
     hebrew: 'עברית',
     english: 'English',
-    
-    // Legal Policy Manager
-    legalPolicyManager: 'ניהול מדיניות משפטית',
-    publishNewVersion: 'פרסום גרסה חדשה',
-    versionHistory: 'היסטוריית גרסאות',
-    versionNumber: 'מספר גרסה',
-    changeSummary: 'סיכום שינויים',
-    contentHtml: 'תוכן HTML',
-    describeChanges: 'תאר את השינויים בגרסה זו...',
-    publishVersion: 'פרסם גרסה',
-    publishing: 'מפרסם...',
-    version: 'גרסה',
-    viewContent: 'הצג תוכן',
-    noVersionsYet: 'לא פורסמו גרסאות עדיין',
-    fillRequiredFields: 'נא למלא את כל השדות הנדרשים',
   },
   en: {
     // Navigation
@@ -476,21 +460,6 @@ const translations = {
     language: 'Language',
     hebrew: 'עברית',
     english: 'English',
-
-    // Legal Policy Manager
-    legalPolicyManager: 'Legal Policy Manager',
-    publishNewVersion: 'Publish New Version',
-    versionHistory: 'Version History',
-    versionNumber: 'Version Number',
-    changeSummary: 'Change Summary',
-    contentHtml: 'Content HTML',
-    describeChanges: 'Describe what changed in this version...',
-    publishVersion: 'Publish Version',
-    publishing: 'Publishing...',
-    version: 'Version',
-    viewContent: 'View Content',
-    noVersionsYet: 'No versions published yet',
-    fillRequiredFields: 'Please fill in all required fields',
 
     rawData: 'Raw Data',
     pageViewsData: 'Page Views Data',
