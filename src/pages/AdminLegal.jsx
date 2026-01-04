@@ -16,53 +16,56 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@/components/ui/tabs';
-import { FileText, Check, Clock } from 'lucide-react';
+import { FileText, Check, Clock, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
 function LegalContent() {
   const { t, theme, isRTL } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
+  const [activeLanguage, setActiveLanguage] = useState('he');
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     version: '',
-    change_summary: '',
-    content_html: ''
+    summary: '',
+    terms_content: {
+      he: '',
+      en: ''
+    },
+    privacy_content: {
+      he: '',
+      en: ''
+    }
   });
 
   const { data: versions = [], isLoading } = useQuery({
     queryKey: ['legalVersions'],
     queryFn: async () => {
-      const result = await base44.entities.LegalDocumentVersion.list('-published_at', 100);
-      return result;
+      const response = await base44.functions.invoke('proxyGetLegalHistory', {});
+      return response.data || [];
     }
   });
 
   const publishMutation = useMutation({
     mutationFn: async (data) => {
-      // First, set all existing versions to inactive
-      const activeVersions = versions.filter(v => v.is_active);
-      for (const version of activeVersions) {
-        await base44.entities.LegalDocumentVersion.update(version.id, { is_active: false });
-      }
-
-      // Create new version
-      return await base44.entities.LegalDocumentVersion.create({
-        ...data,
-        is_active: true,
-        published_at: new Date().toISOString()
-      });
+      const response = await base44.functions.invoke('proxyPublishLegal', data);
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['legalVersions'] });
-      setFormData({ version: '', change_summary: '', content_html: '' });
+      setFormData({
+        version: '',
+        summary: '',
+        terms_content: { he: '', en: '' },
+        privacy_content: { he: '', en: '' }
+      });
     }
   });
 
   const handlePublish = () => {
-    if (!formData.version || !formData.content_html) {
-      alert(t('fillRequiredFields') || 'Please fill in all required fields');
+    if (!formData.version || !formData.terms_content.he || !formData.privacy_content.he) {
+      alert(t('fillRequiredFields') || 'Please fill in version and Hebrew content');
       return;
     }
     publishMutation.mutate(formData);
@@ -116,52 +119,137 @@ function LegalContent() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
-                    <Label className={theme === 'dark' ? "text-slate-300" : ""}>
-                      {t('versionNumber') || 'Version Number'} *
-                    </Label>
-                    <Input
-                      value={formData.version}
-                      onChange={(e) => setFormData({...formData, version: e.target.value})}
-                      placeholder="1.1"
-                      className={cn(
-                        "mt-2",
-                        theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
-                      )}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                        {t('versionNumber') || 'Version Number'} *
+                      </Label>
+                      <Input
+                        value={formData.version}
+                        onChange={(e) => setFormData({...formData, version: e.target.value})}
+                        placeholder="1.1"
+                        className={cn(
+                          "mt-2",
+                          theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                        )}
+                      />
+                    </div>
+
+                    <div>
+                      <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                        {t('changeSummary') || 'Change Summary'}
+                      </Label>
+                      <Input
+                        value={formData.summary}
+                        onChange={(e) => setFormData({...formData, summary: e.target.value})}
+                        placeholder={t('briefSummary') || 'Brief summary of changes'}
+                        className={cn(
+                          "mt-2",
+                          theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                        )}
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <Label className={theme === 'dark' ? "text-slate-300" : ""}>
-                      {t('changeSummary') || 'Change Summary'}
-                    </Label>
-                    <Textarea
-                      value={formData.change_summary}
-                      onChange={(e) => setFormData({...formData, change_summary: e.target.value})}
-                      placeholder={t('describeChanges') || 'Describe what changed in this version...'}
-                      rows={4}
-                      className={cn(
-                        "mt-2",
-                        theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
-                      )}
-                    />
-                  </div>
+                  <Tabs value={activeLanguage} onValueChange={setActiveLanguage} className="w-full">
+                    <TabsList className={cn(
+                      "grid w-[300px] grid-cols-2",
+                      theme === 'dark' ? "bg-slate-900" : ""
+                    )}>
+                      <TabsTrigger value="he">עברית</TabsTrigger>
+                      <TabsTrigger value="en">English</TabsTrigger>
+                    </TabsList>
 
-                  <div>
-                    <Label className={theme === 'dark' ? "text-slate-300" : ""}>
-                      {t('contentHtml') || 'Content HTML'} *
-                    </Label>
-                    <Textarea
-                      value={formData.content_html}
-                      onChange={(e) => setFormData({...formData, content_html: e.target.value})}
-                      placeholder="<h1>Terms of Service</h1><p>...</p>"
-                      rows={12}
-                      className={cn(
-                        "mt-2 font-mono text-sm",
-                        theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
-                      )}
-                    />
-                  </div>
+                    <TabsContent value="he" className="space-y-4 mt-4">
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          תנאי שימוש (עברית) *
+                        </Label>
+                        <Textarea
+                          value={formData.terms_content.he}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms_content: {...formData.terms_content, he: e.target.value}
+                          })}
+                          placeholder="<h1>תנאי שימוש</h1><p>...</p>"
+                          rows={10}
+                          className={cn(
+                            "mt-2 font-mono text-sm",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          מדיניות פרטיות (עברית) *
+                        </Label>
+                        <Textarea
+                          value={formData.privacy_content.he}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            privacy_content: {...formData.privacy_content, he: e.target.value}
+                          })}
+                          placeholder="<h1>מדיניות פרטיות</h1><p>...</p>"
+                          rows={10}
+                          className={cn(
+                            "mt-2 font-mono text-sm",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="en" className="space-y-4 mt-4">
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          Terms of Service (English)
+                        </Label>
+                        <Textarea
+                          value={formData.terms_content.en}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms_content: {...formData.terms_content, en: e.target.value}
+                          })}
+                          placeholder="<h1>Terms of Service</h1><p>...</p>"
+                          rows={10}
+                          className={cn(
+                            "mt-2 font-mono text-sm",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          Privacy Policy (English)
+                        </Label>
+                        <Textarea
+                          value={formData.privacy_content.en}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            privacy_content: {...formData.privacy_content, en: e.target.value}
+                          })}
+                          placeholder="<h1>Privacy Policy</h1><p>...</p>"
+                          rows={10}
+                          className={cn(
+                            "mt-2 font-mono text-sm",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+
+                  {publishMutation.isError && (
+                    <div className={cn(
+                      "p-3 rounded-lg flex items-start gap-2",
+                      theme === 'dark' ? "bg-red-900/20 text-red-400" : "bg-red-50 text-red-600"
+                    )}>
+                      <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">{publishMutation.error?.message || 'Failed to publish'}</span>
+                    </div>
+                  )}
 
                   <Button
                     onClick={handlePublish}
@@ -238,29 +326,58 @@ function LegalContent() {
                             </span>
                           </div>
                           
-                          {version.change_summary && (
+                          {version.summary && (
                             <p className={cn(
                               "text-sm mb-3",
                               theme === 'dark' ? "text-slate-300" : "text-gray-700"
                             )}>
-                              {version.change_summary}
+                              {version.summary}
                             </p>
                           )}
 
-                          <details className="mt-2">
-                            <summary className={cn(
-                              "cursor-pointer text-sm",
-                              theme === 'dark' ? "text-slate-400" : "text-gray-500"
+                          <Tabs defaultValue="terms-he" className="mt-3">
+                            <TabsList className={cn(
+                              "grid w-full grid-cols-4 h-auto",
+                              theme === 'dark' ? "bg-slate-950" : "bg-gray-100"
                             )}>
-                              {t('viewContent') || 'View Content'}
-                            </summary>
-                            <div className={cn(
-                              "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs font-mono",
-                              theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
-                            )}>
-                              {version.content_html}
-                            </div>
-                          </details>
+                              <TabsTrigger value="terms-he" className="text-xs">Terms (HE)</TabsTrigger>
+                              <TabsTrigger value="terms-en" className="text-xs">Terms (EN)</TabsTrigger>
+                              <TabsTrigger value="privacy-he" className="text-xs">Privacy (HE)</TabsTrigger>
+                              <TabsTrigger value="privacy-en" className="text-xs">Privacy (EN)</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="terms-he">
+                              <div className={cn(
+                                "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
+                                theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
+                              )}>
+                                <div dangerouslySetInnerHTML={{ __html: version.terms_content?.he || 'N/A' }} />
+                              </div>
+                            </TabsContent>
+                            <TabsContent value="terms-en">
+                              <div className={cn(
+                                "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
+                                theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
+                              )}>
+                                <div dangerouslySetInnerHTML={{ __html: version.terms_content?.en || 'N/A' }} />
+                              </div>
+                            </TabsContent>
+                            <TabsContent value="privacy-he">
+                              <div className={cn(
+                                "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
+                                theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
+                              )}>
+                                <div dangerouslySetInnerHTML={{ __html: version.privacy_content?.he || 'N/A' }} />
+                              </div>
+                            </TabsContent>
+                            <TabsContent value="privacy-en">
+                              <div className={cn(
+                                "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
+                                theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
+                              )}>
+                                <div dangerouslySetInnerHTML={{ __html: version.privacy_content?.en || 'N/A' }} />
+                              </div>
+                            </TabsContent>
+                          </Tabs>
                         </div>
                       ))}
                     </div>
