@@ -28,12 +28,15 @@ function LegalContent() {
 
   const [formData, setFormData] = useState({
     version: '',
-    summary: '',
-    terms_content: {
+    terms: {
       he: '',
       en: ''
     },
-    privacy_content: {
+    privacy: {
+      he: '',
+      en: ''
+    },
+    summary: {
       he: '',
       en: ''
     }
@@ -42,8 +45,8 @@ function LegalContent() {
   const { data: versions = [], isLoading } = useQuery({
     queryKey: ['legalVersions'],
     queryFn: async () => {
-      const response = await base44.functions.invoke('proxyGetLegalHistory', {});
-      return response.data || [];
+      const result = await base44.entities.LegalDocumentVersion.list('-published_at', 100);
+      return result || [];
     }
   });
 
@@ -56,15 +59,15 @@ function LegalContent() {
       queryClient.invalidateQueries({ queryKey: ['legalVersions'] });
       setFormData({
         version: '',
-        summary: '',
-        terms_content: { he: '', en: '' },
-        privacy_content: { he: '', en: '' }
+        terms: { he: '', en: '' },
+        privacy: { he: '', en: '' },
+        summary: { he: '', en: '' }
       });
     }
   });
 
   const handlePublish = () => {
-    if (!formData.version || !formData.terms_content.he || !formData.privacy_content.he) {
+    if (!formData.version || !formData.terms.he || !formData.privacy.he) {
       alert(t('fillRequiredFields') || 'Please fill in version and Hebrew content');
       return;
     }
@@ -135,20 +138,7 @@ function LegalContent() {
                       />
                     </div>
 
-                    <div>
-                      <Label className={theme === 'dark' ? "text-slate-300" : ""}>
-                        {t('changeSummary') || 'Change Summary'}
-                      </Label>
-                      <Input
-                        value={formData.summary}
-                        onChange={(e) => setFormData({...formData, summary: e.target.value})}
-                        placeholder={t('briefSummary') || 'Brief summary of changes'}
-                        className={cn(
-                          "mt-2",
-                          theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
-                        )}
-                      />
-                    </div>
+
                   </div>
 
                   <Tabs value={activeLanguage} onValueChange={setActiveLanguage} className="w-full">
@@ -163,13 +153,32 @@ function LegalContent() {
                     <TabsContent value="he" className="space-y-4 mt-4">
                       <div>
                         <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          סיכום שינויים (עברית)
+                        </Label>
+                        <Textarea
+                          value={formData.summary.he}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            summary: {...formData.summary, he: e.target.value}
+                          })}
+                          placeholder="סיכום קצר של השינויים..."
+                          rows={2}
+                          className={cn(
+                            "mt-2",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
                           תנאי שימוש (עברית) *
                         </Label>
                         <Textarea
-                          value={formData.terms_content.he}
+                          value={formData.terms.he}
                           onChange={(e) => setFormData({
                             ...formData,
-                            terms_content: {...formData.terms_content, he: e.target.value}
+                            terms: {...formData.terms, he: e.target.value}
                           })}
                           placeholder="<h1>תנאי שימוש</h1><p>...</p>"
                           rows={10}
@@ -185,10 +194,10 @@ function LegalContent() {
                           מדיניות פרטיות (עברית) *
                         </Label>
                         <Textarea
-                          value={formData.privacy_content.he}
+                          value={formData.privacy.he}
                           onChange={(e) => setFormData({
                             ...formData,
-                            privacy_content: {...formData.privacy_content, he: e.target.value}
+                            privacy: {...formData.privacy, he: e.target.value}
                           })}
                           placeholder="<h1>מדיניות פרטיות</h1><p>...</p>"
                           rows={10}
@@ -203,13 +212,32 @@ function LegalContent() {
                     <TabsContent value="en" className="space-y-4 mt-4">
                       <div>
                         <Label className={theme === 'dark' ? "text-slate-300" : ""}>
+                          Change Summary (English)
+                        </Label>
+                        <Textarea
+                          value={formData.summary.en}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            summary: {...formData.summary, en: e.target.value}
+                          })}
+                          placeholder="Brief summary of changes..."
+                          rows={2}
+                          className={cn(
+                            "mt-2",
+                            theme === 'dark' ? "bg-slate-900 border-slate-700 text-white" : ""
+                          )}
+                        />
+                      </div>
+
+                      <div>
+                        <Label className={theme === 'dark' ? "text-slate-300" : ""}>
                           Terms of Service (English)
                         </Label>
                         <Textarea
-                          value={formData.terms_content.en}
+                          value={formData.terms.en}
                           onChange={(e) => setFormData({
                             ...formData,
-                            terms_content: {...formData.terms_content, en: e.target.value}
+                            terms: {...formData.terms, en: e.target.value}
                           })}
                           placeholder="<h1>Terms of Service</h1><p>...</p>"
                           rows={10}
@@ -225,10 +253,10 @@ function LegalContent() {
                           Privacy Policy (English)
                         </Label>
                         <Textarea
-                          value={formData.privacy_content.en}
+                          value={formData.privacy.en}
                           onChange={(e) => setFormData({
                             ...formData,
-                            privacy_content: {...formData.privacy_content, en: e.target.value}
+                            privacy: {...formData.privacy, en: e.target.value}
                           })}
                           placeholder="<h1>Privacy Policy</h1><p>...</p>"
                           rows={10}
@@ -326,13 +354,14 @@ function LegalContent() {
                             </span>
                           </div>
                           
-                          {version.summary && (
-                            <p className={cn(
-                              "text-sm mb-3",
+                          {(version.summary?.he || version.summary?.en) && (
+                            <div className={cn(
+                              "text-sm mb-3 space-y-1",
                               theme === 'dark' ? "text-slate-300" : "text-gray-700"
                             )}>
-                              {version.summary}
-                            </p>
+                              {version.summary?.he && <p><strong>עברית:</strong> {version.summary.he}</p>}
+                              {version.summary?.en && <p><strong>English:</strong> {version.summary.en}</p>}
+                            </div>
                           )}
 
                           <Tabs defaultValue="terms-he" className="mt-3">
@@ -350,7 +379,7 @@ function LegalContent() {
                                 "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
                                 theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
                               )}>
-                                <div dangerouslySetInnerHTML={{ __html: version.terms_content?.he || 'N/A' }} />
+                                <div dangerouslySetInnerHTML={{ __html: version.terms?.he || 'N/A' }} />
                               </div>
                             </TabsContent>
                             <TabsContent value="terms-en">
@@ -358,7 +387,7 @@ function LegalContent() {
                                 "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
                                 theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
                               )}>
-                                <div dangerouslySetInnerHTML={{ __html: version.terms_content?.en || 'N/A' }} />
+                                <div dangerouslySetInnerHTML={{ __html: version.terms?.en || 'N/A' }} />
                               </div>
                             </TabsContent>
                             <TabsContent value="privacy-he">
@@ -366,7 +395,7 @@ function LegalContent() {
                                 "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
                                 theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
                               )}>
-                                <div dangerouslySetInnerHTML={{ __html: version.privacy_content?.he || 'N/A' }} />
+                                <div dangerouslySetInnerHTML={{ __html: version.privacy?.he || 'N/A' }} />
                               </div>
                             </TabsContent>
                             <TabsContent value="privacy-en">
@@ -374,7 +403,7 @@ function LegalContent() {
                                 "mt-2 p-3 rounded border overflow-auto max-h-60 text-xs",
                                 theme === 'dark' ? "bg-slate-950 border-slate-700 text-slate-300" : "bg-white border-gray-200 text-gray-700"
                               )}>
-                                <div dangerouslySetInnerHTML={{ __html: version.privacy_content?.en || 'N/A' }} />
+                                <div dangerouslySetInnerHTML={{ __html: version.privacy?.en || 'N/A' }} />
                               </div>
                             </TabsContent>
                           </Tabs>
