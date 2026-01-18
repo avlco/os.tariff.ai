@@ -6,7 +6,7 @@ import { decrypt } from './utils/encryption.ts'; // ✅ ייבוא מנוע הה
 
 export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
-        const apiKey = Deno.env.get("TAIRFFAI_APP_API_KEY");
+        const apiKey = Deno.env.get("TARIFFAI_APP_API_KEY");
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }

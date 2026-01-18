@@ -9,7 +9,7 @@ export default Deno.serve(async (req) => {
         // 1. אבטחה: אימות API Key (Server-to-Server)
         // נוודא שהבקשה מגיעה מהאפליקציה שלנו ולא מסתם מישהו
         const authHeader = req.headers.get('Authorization');
-        const expectedKey = Deno.env.get('TAIRFFAI_APP_API_KEY'); 
+        const expectedKey = Deno.env.get('TARIFFAI_APP_API_KEY'); 
         
         if (!expectedKey || authHeader !== `Bearer ${expectedKey}`) {
             console.warn('Unauthorized deletion request - Invalid API Key');
