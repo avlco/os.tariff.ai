@@ -1,70 +1,56 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+// 📁 File: functions/anonymizeUserData.ts
+// [מערכת הניהול - os.tariff.ai]
 
-Deno.serve(async (req) => {
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+
+/**
+ * פונקציה פנימית לביצוע אנונימיזציה של נתוני משתמש.
+ * המטרה: לשמור על הערך הסטטיסטי (כמה דוחות נוצרו) אך למחוק את הקשר לאדם.
+ */
+export async function anonymizeUserLogs(userId: string, base44Client: any) {
+    console.log(`Starting anonymization for user: ${userId}`);
+
     try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-        
-        if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
-        }
-
-        const { user_id } = await req.json();
-        
-        if (!user_id) {
-            return Response.json({ error: 'user_id is required' }, { status: 400 });
-        }
-
-        // Get the user to anonymize
-        const users = await base44.asServiceRole.entities.User.filter({ id: user_id });
-        
-        if (!users || users.length === 0) {
-            return Response.json({ error: 'User not found' }, { status: 404 });
-        }
-
-        const userToAnonymize = users[0];
-
-        // Check if already anonymized
-        if (userToAnonymize.anonymized_at) {
-            return Response.json({ 
-                message: 'User already anonymized',
-                anonymized_at: userToAnonymize.anonymized_at 
-            });
-        }
-
-        // Create hash of original email for potential recovery/verification
-        const emailHash = await crypto.subtle.digest(
-            'SHA-256',
-            new TextEncoder().encode(userToAnonymize.email + Deno.env.get('BASE44_APP_ID'))
-        );
-        const emailHashHex = Array.from(new Uint8Array(emailHash))
+        // 1. יצירת מזהה אנונימי (Hash) בלתי הפיך
+        const encoder = new TextEncoder();
+        const data = encoder.encode(userId + "deleted-salt");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const anonymousId = "deleted_" + Array.from(new Uint8Array(hashBuffer))
             .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
+            .join('').slice(0, 12);
 
-        // Anonymize the user data
-        const anonymizedData = {
-            email: `deleted_${user_id}@anonymized.local`,
-            full_name: 'Deleted User',
-            is_deleted: true,
-            anonymized_at: new Date().toISOString(),
-            original_email_hash: emailHashHex,
-            // Keep other non-PII fields as is
-            role: userToAnonymize.role,
-            plan: userToAnonymize.plan
-        };
-
-        // Update the user with anonymized data
-        await base44.asServiceRole.entities.User.update(user_id, anonymizedData);
-
-        return Response.json({
-            success: true,
-            message: 'User data anonymized successfully',
-            user_id,
-            anonymized_at: anonymizedData.anonymized_at
+        // 2. עדכון טבלת אירועי אנליטיקה
+        // אנו שולפים את כל האירועים של המשתמש והופכים אותם לאנונימיים
+        const events = await base44Client.asServiceRole.entities.AnalyticsEvent.filter({ 
+            userId: userId 
         });
 
-    } catch (error) {
-        console.error('Error anonymizing user data:', error);
-        return Response.json({ error: error.message }, { status: 500 });
+        // עדכון ב-Batch (או בלולאה אם ה-SDK לא תומך בעדכון המוני)
+        const updatePromises = events.map((event: any) => 
+            base44Client.asServiceRole.entities.AnalyticsEvent.update(event.id, {
+                userId: anonymousId,
+                appUserId: anonymousId,
+                ipAddress: '0.0.0.0', // מחיקת IP
+                metadata: {
+                    ...event.metadata,
+                    anonymized: true,
+                    original_deleted_date: new Date().toISOString()
+                }
+            })
+        );
+
+        await Promise.all(updatePromises);
+        
+        console.log(`Successfully anonymized ${events.length} events for user ${userId}`);
+        return { success: true, anonymousId };
+
+    } catch (error: any) {
+        console.error('Anonymization failed:', error);
+        throw error;
     }
+}
+
+// Endpoint לבדיקה (אופציונלי, נדרש ע"י Deno)
+export default Deno.serve(async (req) => {
+    return Response.json({ message: "Internal utility function" });
 });
