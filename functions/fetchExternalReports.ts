@@ -1,14 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+// 📁 File: functions/fetchExternalReports.ts
+import { withAuth } from './auth/middleware.ts';
+import { Permission } from './auth/types.ts';
 
-Deno.serve(async (req) => {
+export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-
-        if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const apiKey = Deno.env.get("TAIRFFAI_APP_API_KEY");
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
@@ -34,8 +29,7 @@ Deno.serve(async (req) => {
 
         const data = await response.json();
 
-        // Map external data structure to internal Report structure
-        const mappedReports = data.map(report => ({
+        const mappedReports = data.map((report: any) => ({
             id: report.id,
             report_id: report.report_id || report.id,
             user_id: report.created_by,
@@ -60,10 +54,10 @@ Deno.serve(async (req) => {
         }));
 
         return Response.json(mappedReports);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching external reports:', error);
         return Response.json({ 
             error: error.message || 'Internal server error' 
         }, { status: 500 });
     }
-});
+}, Permission.VIEW_ALL_REPORTS));
