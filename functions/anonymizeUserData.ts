@@ -7,7 +7,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
  * פונקציה פנימית לביצוע אנונימיזציה של נתוני משתמש.
  * המטרה: לשמור על הערך הסטטיסטי (כמה דוחות נוצרו) אך למחוק את הקשר לאדם.
  */
-export async function anonymizeUserLogs(userId: string, base44Client: any) {
+export async function anonymizeUserLogs(userId, base44Client) {
     console.log(`Starting anonymization for user: ${userId}`);
 
     try {
@@ -26,7 +26,7 @@ export async function anonymizeUserLogs(userId: string, base44Client: any) {
         });
 
         // עדכון ב-Batch (או בלולאה אם ה-SDK לא תומך בעדכון המוני)
-        const updatePromises = events.map((event: any) => 
+        const updatePromises = events.map((event) => 
             base44Client.asServiceRole.entities.AnalyticsEvent.update(event.id, {
                 userId: anonymousId,
                 appUserId: anonymousId,
@@ -44,7 +44,7 @@ export async function anonymizeUserLogs(userId: string, base44Client: any) {
         console.log(`Successfully anonymized ${events.length} events for user ${userId}`);
         return { success: true, anonymousId };
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Anonymization failed:', error);
         throw error;
     }
