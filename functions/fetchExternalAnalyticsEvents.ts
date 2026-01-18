@@ -1,14 +1,12 @@
+// 📁 File: functions/fetchExternalAnalyticsEvents.ts
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+import { withAuth } from './auth/middleware.ts';
+import { Permission } from './auth/types.ts';
 
-Deno.serve(async (req) => {
+export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
+        // ה-middleware כבר וידא שהמשתמש הוא אדמין עם הרשאת צפייה באנליטיקה
         
-        if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const apiKey = Deno.env.get('TAIRFFAI_APP_API_KEY');
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
@@ -39,8 +37,9 @@ Deno.serve(async (req) => {
         const conversions = conversionsResponse.ok ? await conversionsResponse.json() : [];
 
         // Map and unify all events into ArchivedAnalyticsEvent format
+        // שימוש ב-any זמני כדי למנוע שגיאות טיפוסים ב-map
         const allEvents = [
-            ...pageViews.map(pv => ({
+            ...pageViews.map((pv: any) => ({
                 event_type: 'page_view',
                 user_id: pv.user_id,
                 page: pv.page_url,
@@ -56,7 +55,7 @@ Deno.serve(async (req) => {
                 },
                 created_date: pv.created_date
             })),
-            ...userActions.map(ua => ({
+            ...userActions.map((ua: any) => ({
                 event_type: ua.action_type,
                 user_id: ua.user_id,
                 page: ua.page_url,
@@ -71,7 +70,7 @@ Deno.serve(async (req) => {
                 },
                 created_date: ua.created_date
             })),
-            ...conversions.map(c => ({
+            ...conversions.map((c: any) => ({
                 event_type: c.conversion_type,
                 user_id: c.user_id,
                 page: c.page_url,
@@ -90,7 +89,7 @@ Deno.serve(async (req) => {
 
         // Archive the unified events asynchronously
         try {
-            const archivePromises = allEvents.map(event => 
+            const archivePromises = allEvents.map((event: any) => 
                 base44.asServiceRole.entities.ArchivedAnalyticsEvent.create({
                     ...event,
                     archived_date: new Date().toISOString(),
@@ -98,15 +97,14 @@ Deno.serve(async (req) => {
                 })
             );
             await Promise.all(archivePromises);
-            console.log(`Archived ${allEvents.length} analytics events (${pageViews.length} page views, ${userActions.length} actions, ${conversions.length} conversions)`);
+            console.log(`Archived ${allEvents.length} analytics events`);
         } catch (archiveError) {
             console.error('Error archiving analytics events:', archiveError);
-            // Continue even if archiving fails
         }
         
         return Response.json(allEvents);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching analytics events:', error);
         return Response.json({ error: error.message }, { status: 500 });
     }
-});
+}, Permission.VIEW_ANALYTICS)); // ✅ הגנה: רק בעלי הרשאת צפייה באנליטיקה
