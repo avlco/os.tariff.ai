@@ -1,6 +1,8 @@
 // 📁 File: functions/fetchExternalUsers.ts
+// [מערכת הניהול - os.tariff.ai]
 import { withAuth } from './auth/middleware.ts';
 import { Permission } from './auth/types.ts';
+import { decrypt } from './utils/encryption.ts'; // ✅ ייבוא מנוע ההצפנה
 
 export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
@@ -9,7 +11,7 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        // Fetch all data in parallel
+        // שליפת כל הנתונים במקביל
         const [usersResponse, reportsResponse, paymentsResponse] = await Promise.all([
             fetch(`https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/UserMasterData`, {
                 headers: { 'api_key': apiKey, 'Content-Type': 'application/json' }
@@ -35,36 +37,45 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
         const reports = reportsResponse.ok ? await reportsResponse.json() : [];
         const payments = paymentsResponse.ok ? await paymentsResponse.json() : [];
 
-        // Calculate real stats per user
+        // חישוב תאריכים
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
-        const mappedUsers = users.map((u: any) => {
-            const userEmail = u.user_email || u.created_by;
+        // ✅ שימוש ב-Promise.all לפענוח מקבילי
+        const mappedUsers = await Promise.all(users.map(async (u: any) => {
+            // זיהוי המשתמש (יכול להיות מוצפן או רגיל)
+            const rawUserEmail = u.user_email || u.created_by;
             
-            // Calculate actual reports this month
+            // 🔐 פענוח שדות רגישים לתצוגה
+            const displayEmail = await decrypt(rawUserEmail);
+            const displayFullName = await decrypt(u.full_name || '');
+            const displayCompany = await decrypt(u.company_name || '');
+            const displayPhone = await decrypt(u.phone || '');
+
+            // חישוב סטטיסטיקות (מתבצע על הערכים הגולמיים כדי לשמור על התאמה)
             const userReports = reports.filter((r: any) => 
-                (r.user_email === userEmail || r.created_by === userEmail)
+                (r.user_email === rawUserEmail || r.created_by === rawUserEmail)
             );
+            
             const reportsThisMonth = userReports.filter((r: any) => {
                 const reportDate = new Date(r.created_date);
                 return reportDate.getMonth() === currentMonth && reportDate.getFullYear() === currentYear;
             }).length;
 
-            // Get actual plan from latest completed payment
+            // איתור תוכנית מנוי
             const userPayments = payments
-                .filter((p: any) => (p.user_email === userEmail || p.created_by === userEmail) && p.status === 'completed')
+                .filter((p: any) => (p.user_email === rawUserEmail || p.created_by === rawUserEmail) && p.status === 'completed')
                 .sort((a: any, b: any) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime());
             const actualPlan = userPayments.length > 0 ? userPayments[0].plan : (u.subscription_plan || 'free');
 
             return {
                 id: u.id,
                 user_id: u.id,
-                email: userEmail,
-                full_name: u.full_name || '',
-                company: u.company_name || '',
-                phone: u.phone || '',
+                email: displayEmail,
+                full_name: displayFullName,
+                company: displayCompany,
+                phone: displayPhone,
                 plan: actualPlan,
                 status: u.account_status || 'active',
                 reports_this_month: reportsThisMonth,
@@ -73,7 +84,7 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
                 last_active: u.last_login || u.updated_date,
                 created_date: u.registration_date || u.created_date
             };
-        });
+        }));
 
         return Response.json(mappedUsers);
     } catch (error: any) {
