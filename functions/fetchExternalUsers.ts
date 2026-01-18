@@ -1,14 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+// 📁 File: functions/fetchExternalUsers.ts
+import { withAuth } from './auth/middleware.ts';
+import { Permission } from './auth/types.ts';
 
-Deno.serve(async (req) => {
+export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-        
-        if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const apiKey = Deno.env.get('TAIRFFAI_APP_API_KEY');
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
@@ -45,44 +40,44 @@ Deno.serve(async (req) => {
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
-        const mappedUsers = users.map(user => {
-            const userEmail = user.user_email || user.created_by;
+        const mappedUsers = users.map((u: any) => {
+            const userEmail = u.user_email || u.created_by;
             
             // Calculate actual reports this month
-            const userReports = reports.filter(r => 
+            const userReports = reports.filter((r: any) => 
                 (r.user_email === userEmail || r.created_by === userEmail)
             );
-            const reportsThisMonth = userReports.filter(r => {
+            const reportsThisMonth = userReports.filter((r: any) => {
                 const reportDate = new Date(r.created_date);
                 return reportDate.getMonth() === currentMonth && reportDate.getFullYear() === currentYear;
             }).length;
 
             // Get actual plan from latest completed payment
             const userPayments = payments
-                .filter(p => (p.user_email === userEmail || p.created_by === userEmail) && p.status === 'completed')
-                .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-            const actualPlan = userPayments.length > 0 ? userPayments[0].plan : (user.subscription_plan || 'free');
+                .filter((p: any) => (p.user_email === userEmail || p.created_by === userEmail) && p.status === 'completed')
+                .sort((a: any, b: any) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime());
+            const actualPlan = userPayments.length > 0 ? userPayments[0].plan : (u.subscription_plan || 'free');
 
             return {
-                id: user.id,
-                user_id: user.id,
+                id: u.id,
+                user_id: u.id,
                 email: userEmail,
-                full_name: user.full_name || '',
-                company: user.company_name || '',
-                phone: user.phone || '',
+                full_name: u.full_name || '',
+                company: u.company_name || '',
+                phone: u.phone || '',
                 plan: actualPlan,
-                status: user.account_status || 'active',
+                status: u.account_status || 'active',
                 reports_this_month: reportsThisMonth,
                 total_reports: userReports.length,
-                preferred_language: user.preferred_language || 'he',
-                last_active: user.last_login || user.updated_date,
-                created_date: user.registration_date || user.created_date
+                preferred_language: u.preferred_language || 'he',
+                last_active: u.last_login || u.updated_date,
+                created_date: u.registration_date || u.created_date
             };
         });
 
         return Response.json(mappedUsers);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching users:', error);
         return Response.json({ error: error.message }, { status: 500 });
     }
-});
+}, Permission.MANAGE_USERS));
