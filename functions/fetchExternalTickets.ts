@@ -1,6 +1,8 @@
 // 📁 File: functions/fetchExternalTickets.ts
+// [מערכת הניהול - os.tariff.ai]
 import { withAuth } from './auth/middleware.ts';
 import { Permission } from './auth/types.ts';
+import { decrypt } from './utils/encryption.ts'; // ✅ ייבוא מנוע ההצפנה
 
 export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
@@ -9,7 +11,7 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        // Fetch SupportTicket entities from external app
+        // שליפת כרטיסי תמיכה
         const response = await fetch(
             `https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/SupportTicket`,
             {
@@ -29,21 +31,28 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
 
         const data = await response.json();
 
-        // Map external data structure to internal SupportTicket structure
-        const mappedTickets = data.map((ticket: any) => ({
-            id: ticket.id,
-            user_id: ticket.created_by,
-            user_email: ticket.created_by,
-            user_name: ticket.created_by,
-            subject: ticket.subject,
-            category: ticket.category,
-            priority: ticket.priority,
-            status: ticket.status,
-            message: ticket.message,
-            messages: ticket.response ? [{ sender: 'admin', message: ticket.response }] : [],
-            assigned_to: ticket.assigned_to,
-            resolved_at: ticket.resolved_at,
-            created_date: ticket.created_date
+        // ✅ פענוח תוכן ההודעות והפרטים האישיים
+        const mappedTickets = await Promise.all(data.map(async (ticket: any) => {
+            const decryptedSubject = await decrypt(ticket.subject);
+            const decryptedMessage = await decrypt(ticket.message);
+            const decryptedResponse = ticket.response ? await decrypt(ticket.response) : null;
+            const decryptedEmail = await decrypt(ticket.created_by);
+
+            return {
+                id: ticket.id,
+                user_id: ticket.created_by,
+                user_email: decryptedEmail,
+                user_name: decryptedEmail, // בדרך כלל זה האימייל
+                subject: decryptedSubject,
+                category: ticket.category,
+                priority: ticket.priority,
+                status: ticket.status,
+                message: decryptedMessage,
+                messages: decryptedResponse ? [{ sender: 'admin', message: decryptedResponse }] : [],
+                assigned_to: ticket.assigned_to,
+                resolved_at: ticket.resolved_at,
+                created_date: ticket.created_date
+            };
         }));
 
         return Response.json(mappedTickets);
