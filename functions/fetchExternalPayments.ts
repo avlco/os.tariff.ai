@@ -1,14 +1,9 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.4';
+// 📁 File: functions/fetchExternalPayments.ts
+import { withAuth } from './auth/middleware.ts';
+import { Permission } from './auth/types.ts';
 
-Deno.serve(async (req) => {
+export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
-        const base44 = createClientFromRequest(req);
-        const user = await base44.auth.me();
-
-        if (!user || user.role !== 'admin') {
-            return Response.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const apiKey = Deno.env.get("TAIRFFAI_APP_API_KEY");
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
@@ -33,7 +28,7 @@ Deno.serve(async (req) => {
         const data = await response.json();
 
         // Map external Payment structure to internal structure
-        const mappedPayments = data.map(payment => ({
+        const mappedPayments = data.map((payment: any) => ({
             user_id: payment.user_id,
             user_email: payment.user_email,
             amount: payment.amount,
@@ -49,10 +44,10 @@ Deno.serve(async (req) => {
         }));
 
         return Response.json(mappedPayments);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching external payments:', error);
         return Response.json({ 
             error: error.message || 'Internal server error' 
         }, { status: 500 });
     }
-});
+}, Permission.VIEW_ANALYTICS));
