@@ -1,6 +1,8 @@
 // 📁 File: functions/fetchExternalReports.ts
+// [מערכת הניהול - os.tariff.ai]
 import { withAuth } from './auth/middleware.ts';
 import { Permission } from './auth/types.ts';
+import { decrypt } from './utils/encryption.ts'; // ✅ ייבוא מנוע ההצפנה
 
 export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
@@ -9,7 +11,7 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
 
-        // Fetch ClassificationReport entities from external app
+        // שליפת הנתונים מהאפליקציה
         const response = await fetch(
             `https://app.base44.com/api/apps/6944f7300c31b18399592a2a/entities/ClassificationReport`,
             {
@@ -29,29 +31,34 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
 
         const data = await response.json();
 
-        const mappedReports = data.map((report: any) => ({
+        // ✅ שימוש ב-Promise.all כדי לפענח שדות רגישים במקביל
+        const mappedReports = await Promise.all(data.map(async (report: any) => ({
             id: report.id,
             report_id: report.report_id || report.id,
             user_id: report.created_by,
-            user_email: report.created_by,
-            product_name: report.product_name,
-            product_description: report.user_input_text,
+            
+            // 🔐 שדות רגישים שמפענחים (אם הם לא מוצפנים, הפונקציה תחזיר אותם כמו שהם)
+            user_email: await decrypt(report.created_by), 
+            product_name: await decrypt(report.product_name),
+            product_description: await decrypt(report.user_input_text),
+            classification_reasoning: await decrypt(report.classification_reasoning),
+            tariff_info: await decrypt(report.tariff_description),
+            
+            // שדות רגילים
             hs_code: report.hs_code,
             confidence_score: report.confidence_score,
             status: report.status,
             origin_country: report.country_of_origin,
             destination_country: report.destination_country,
             manufacturing_country: report.country_of_manufacture,
-            classification_reasoning: report.classification_reasoning,
             product_characteristics: report.product_characteristics,
-            tariff_info: report.tariff_description,
             import_requirements: report.import_requirements,
             official_sources: report.official_sources,
             alternative_codes: report.alternative_classifications,
             input_type: report.user_input_files?.length > 0 ? 'file' : 'text',
             file_url: report.user_input_files?.[0],
             created_date: report.created_date
-        }));
+        })));
 
         return Response.json(mappedReports);
     } catch (error: any) {
