@@ -7,7 +7,7 @@ export default Deno.serve(withAuth(async (req, user, base44) => {
     try {
         // ה-middleware כבר וידא שהמשתמש הוא אדמין עם הרשאת צפייה באנליטיקה
         
-        const apiKey = Deno.env.get('TAIRFFAI_APP_API_KEY');
+        const apiKey = Deno.env.get('TARIFFAI_APP_API_KEY');
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
