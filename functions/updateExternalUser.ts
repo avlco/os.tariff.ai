@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const apiKey = Deno.env.get('TAIRFFAI_APP_API_KEY');
+        const apiKey = Deno.env.get('TARIFFAI_APP_API_KEY');
         if (!apiKey) {
             return Response.json({ error: 'API key not configured' }, { status: 500 });
         }
